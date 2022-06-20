@@ -5,6 +5,7 @@ import TextField from '@mui/material/TextField';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import styled from '@mui/material/styles/styled';
 import Paper from '@mui/material/Paper'
+import { PlayerProps } from './Player';
 
 
 const Action = styled(Paper)(({ theme }) => ({
@@ -26,7 +27,7 @@ class FlipAction extends React.Component {
         fetch("http://localhost:8000/game/flip", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-          });
+        });
     }
     render() {
         return (
@@ -45,7 +46,6 @@ class TakeAction extends React.Component<{}, { takenWord: string; }> {
     }
     handleChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
         this.setState({ takenWord: event.target.value });
-        console.log("Changed to: " + this.state.takenWord);
         event.preventDefault();
     }
     handleSubmit(event: React.SyntheticEvent) {
@@ -54,21 +54,31 @@ class TakeAction extends React.Component<{}, { takenWord: string; }> {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(this.state),
-          });
+        });
         event.preventDefault();
 
     }
     render() {
         return (
             <form onSubmit={this.handleSubmit}>
-                <TextField id="outlined-basic" label="Outlined" variant="outlined" onChange={this.handleChange} />
+                <TextField id="outlined-basic" label="take" variant="outlined" onChange={this.handleChange} />
                 <Button type="submit" variant="contained">Take</Button>
             </form>
         );
     }
 }
-class StealAction extends React.Component<{ defaultPlayer: number; }, { targetPlayer: number; takenWord: string; }> {
-    constructor(props: { defaultPlayer: number; }) {
+function PlayerSelector(props: { players: PlayerProps[], handleChange: (playerID: number) => void }) {
+    const players = props.players.map(player =>
+        (<Button onClick={() => props.handleChange(player.playerID)} variant="contained" key={player.playerID}>{player.name}</Button>)
+    );
+    return (
+        <ButtonGroup variant="contained" aria-label="outlined primary button group">
+            {players}
+        </ButtonGroup>
+    );
+}
+class StealAction extends React.Component<{ defaultPlayer: number, players: PlayerProps[]; }, { targetPlayer: number; takenWord: string; }> {
+    constructor(props: { defaultPlayer: number; players: PlayerProps[] }) {
         super(props);
         this.state = {
             targetPlayer: props.defaultPlayer,
@@ -84,7 +94,7 @@ class StealAction extends React.Component<{ defaultPlayer: number; }, { targetPl
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(this.state),
-          });
+        });
         event.preventDefault();
     }
     handlePlayerChange(playerID: number) {
@@ -101,10 +111,8 @@ class StealAction extends React.Component<{ defaultPlayer: number; }, { targetPl
         return (
             <form onSubmit={this.handleSubmit}>
                 <div>
-                    <TextField id="outlined-basic" label="Outlined" variant="outlined" onChange={this.handleWordChange} />
-                    <ButtonGroup variant="contained" aria-label="outlined primary button group">
-                        <Button onClick={() => this.handlePlayerChange(0)} variant="contained">One</Button>
-                    </ButtonGroup>
+                    <TextField id="outlined-basic" label="steal" variant="outlined" onChange={this.handleWordChange} />
+                    <PlayerSelector players={this.props.players} handleChange={this.handlePlayerChange} />
                 </div>
                 <br />
                 <div>
@@ -114,7 +122,7 @@ class StealAction extends React.Component<{ defaultPlayer: number; }, { targetPl
         );
     }
 }
-export function Actions(props: {}) {
+export function Actions(props: { defaultPlayerID: number, players: PlayerProps[] }) {
     return (<Grid container spacing={8} alignItems="center" justifyContent="center">
         <Grid item>
             <Action>
@@ -128,7 +136,7 @@ export function Actions(props: {}) {
         </Grid>
         <Grid item>
             <Action>
-                <StealAction defaultPlayer={0} />
+                <StealAction defaultPlayer={props.defaultPlayerID} players={props.players} />
             </Action>
         </Grid>
     </Grid>

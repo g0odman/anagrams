@@ -13,6 +13,7 @@ interface GameData {
   players: PlayerProps[],
   remainingLetters: number,
   currentPlayerID: number,
+  defaultPlayerID: number
 }
 
 function Game(props: {gameData : GameData}) {
@@ -32,7 +33,8 @@ function App() {
     players: [],
     remainingLetters: 0,
     currentPlayerID: 0,
-  })
+    defaultPlayerID: 0
+  });
   const fetchGameData= async () => {
     const response = await fetch("http://localhost:8000/game/data")
     const gameData = await response.json()
@@ -41,6 +43,7 @@ function App() {
       currentPlayerID: gameData.currentPlayerID,
       players: gameData.players,
       remainingLetters: gameData.remaininingLetters,
+      defaultPlayerID: gameData.defaultPlayerID
     });
   }
   useEffect(() => {
@@ -50,7 +53,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <Game gameData={gameData}></Game>
-        <Actions />
+        <Actions players={gameData.players} defaultPlayerID={gameData.defaultPlayerID} />
       </header>
     </div>
   );
