@@ -3,20 +3,20 @@ import './App.css';
 import { Actions } from './Anagrams/Actions';
 import { PlayerList, PlayerProps } from './Anagrams/Player';
 import { GameInfo } from './Anagrams/GameInfo';
-import { Board } from './Anagrams/Board';
+import { Board, OrderedLetterProps } from './Anagrams/Board';
 import { useEffect, useState } from 'react';
 
 
 
-interface GameData {
-  letters: string[],
+type GameData = {
+  letters: OrderedLetterProps[],
   players: PlayerProps[],
   remainingLetters: number,
   currentPlayerID: number,
   defaultPlayerID: number
 }
 
-function Game(props: {gameData : GameData}) {
+function Game(props: { gameData: GameData }) {
   return <div>
     <GameInfo
       title="Anagrams"
@@ -35,7 +35,7 @@ function App() {
     currentPlayerID: 0,
     defaultPlayerID: 0
   });
-  const fetchGameData= async () => {
+  const fetchGameData = async () => {
     const response = await fetch("http://localhost:8000/game/data")
     const gameData = await response.json()
     setGameData({
@@ -47,7 +47,8 @@ function App() {
     });
   }
   useEffect(() => {
-    fetchGameData()},
+    fetchGameData()
+  },
     []);
   return (
     <div className="App">

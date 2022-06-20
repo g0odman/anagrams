@@ -1,21 +1,40 @@
+from dataclasses import dataclass
 from typing import List
 
 from .anagram_checker import is_word_avaliable, get_steal, get_needed_letters
 from .exceptions import InvalidWordException, MissingLettersForWordException, NoLettersLeftException
 from .player import Player
 
+
+@dataclass
+class OrderedLetter(object):
+    letter: str
+    letter_id: int
+
+
 class Board(object):
     def __init__(self, letter_order: List[str], dictionary: List[str]):
-        self._remainining_letters = letter_order
+        self._remainining_letters = [OrderedLetter(
+            letter, letter_id) for letter_id, letter in enumerate(letter_order)]
         self._dictionary = dictionary
-        self._current_letters = list()  # type: list[str]
+        self._current_letters = list()  # type: list[OrderedLetter]
 
     def current_letters(self):
+        return [ordered_letter.letter for ordered_letter in self._current_letters]
+
+    def current_ordered_letters(self):
         return self._current_letters
 
-    def _remove_letters(self, letters: str):
+    def _remove_letter(self, letter: str):
+        for ordered_letter in self._current_letters:
+            if ordered_letter.letter == letter:
+                self._current_letters.remove(ordered_letter)
+                return
+        raise RuntimeError("Invalid letters state")
+
+    def _remove_letters(self, letters: List[str]):
         for letter in letters:
-            self._current_letters.remove(letter)
+            self._remove_letter(letter)
 
     def _check_valid_word(self, word):
         if word not in self._dictionary:
@@ -23,7 +42,7 @@ class Board(object):
 
     def take_word(self, player: Player, word):
         self._check_valid_word(word)
-        if is_word_avaliable(word, self._current_letters):
+        if is_word_avaliable(word, self.current_letters()):
             self._remove_letters(word)
             player.add_word(word)
         else:
@@ -31,7 +50,8 @@ class Board(object):
 
     def steal_word(self, word, current_player: Player, target_player: Player):
         self._check_valid_word(word)
-        stolen_word = get_steal(word, target_player.words, self._current_letters)
+        stolen_word = get_steal(
+            word, target_player.words, self.current_letters())
         target_player.remove_word(stolen_word)
         current_player.add_word(word)
         self._remove_letters(letters=get_needed_letters(stolen_word, word))

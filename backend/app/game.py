@@ -1,9 +1,9 @@
 import random
 from typing import List
-
+from dataclasses import asdict
 from .board import Board
 from .exceptions import OutOfTurnFlipException
-from .letters import get_words, get_letters_order
+from .game_setup import get_words, get_letters_order
 from .player import Player
 
 
@@ -57,12 +57,12 @@ class Game(object):
         return self._players
 
     def current_letters(self):
-        return self._board.current_letters()
+        return self._board.current_ordered_letters()
 
     def to_json(self):
         return {
-            'boardLetters': self.current_letters(),
-            'players': [player.to_json() for player in self.players()],
+            'boardLetters': map(asdict, self.current_letters()),
+            'players': map(asdict, self.players()),
             'remainingLetters': self.remaining_letters_count(),
             'currentPlayerID': self._current_player_id,
             'defaultPlayerID': self._default_player_id,

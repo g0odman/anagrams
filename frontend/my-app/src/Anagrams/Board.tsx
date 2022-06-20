@@ -14,11 +14,14 @@ const Item = styled(Paper)(({ theme }) => ({
   width: 60,
   top: '50%',
 }));
+export type OrderedLetterProps = {
+  letter: string,
+  letter_id: number
+}
 
-
-function Letter(props: { letter: string; }) {
+function Letter(props: OrderedLetterProps) {
   return (
-    <Grid item xs={2}>
+    <Grid item xs={2} key={props.letter_id}>
       <Item elevation={3}>
         <Typography variant="h5" component="div" sx={{ p: 2 }}>
           <strong>{props.letter.toUpperCase()}</strong>
@@ -27,8 +30,8 @@ function Letter(props: { letter: string; }) {
     </Grid>
   );
 }
-export function Board(props: { letters: string[]; }) {
-  const letters = props.letters.map(x => Letter({ letter: x }));
+export function Board(props: { letters: OrderedLetterProps[]; }) {
+  const letters = props.letters.map(letter => Letter(letter));
   return (
     <Grid container spacing={2}
       alignItems="center"
