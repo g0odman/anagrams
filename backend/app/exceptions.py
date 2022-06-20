@@ -1,22 +1,26 @@
-class InvalidStealException(Exception):
+class BaseAnagramsException(Exception):
     pass
 
 
-class InvalidWordException(Exception):
+class InvalidStealException(BaseAnagramsException):
     pass
 
 
-class OutOfTurnFlipException(Exception):
+class InvalidWordException(BaseAnagramsException):
     pass
 
 
-class NoStealAvaliableException(Exception):
+class OutOfTurnFlipException(BaseAnagramsException):
     pass
 
 
-class MissingLettersForWordException(Exception):
+class NoStealAvaliableException(BaseAnagramsException):
     pass
 
 
-class NoLettersLeftException(Exception):
+class MissingLettersForWordException(BaseAnagramsException):
+    pass
+
+
+class NoLettersLeftException(BaseAnagramsException):
     pass
