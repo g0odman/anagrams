@@ -3,6 +3,8 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import ButtonGroup from '@mui/material/ButtonGroup';
+import styled from '@mui/material/styles/styled';
+import Paper from '@mui/material/Paper'
 
 
 const Action = styled(Paper)(({ theme }) => ({
@@ -21,7 +23,10 @@ class FlipAction extends React.Component {
         this.handleClick = this.handleClick.bind(this);
     }
     handleClick() {
-        console.log("Flip!");
+        fetch("http://localhost:8000/game/flip", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+          });
     }
     render() {
         return (
@@ -45,6 +50,11 @@ class TakeAction extends React.Component<{}, { takenWord: string; }> {
     }
     handleSubmit(event: React.SyntheticEvent) {
         console.log("Take: " + this.state.takenWord);
+        fetch("http://localhost:8000/game/take", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(this.state),
+          });
         event.preventDefault();
 
     }
@@ -70,6 +80,11 @@ class StealAction extends React.Component<{ defaultPlayer: number; }, { targetPl
     }
     handleSubmit(event: React.SyntheticEvent) {
         console.log("Stealing " + this.state.takenWord + " from " + this.state.targetPlayer);
+        fetch("http://localhost:8000/game/steal", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(this.state),
+          });
         event.preventDefault();
     }
     handlePlayerChange(playerID: number) {

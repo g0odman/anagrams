@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function GameInfo(props: { title: string; remainingLetters: number; }) {
+export function GameInfo(props: { title: string, remainingLetters: number, currentPlayerID: number }) {
   return (
     <div>
       <h1>{props.title}</h1>

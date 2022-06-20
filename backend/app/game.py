@@ -1,10 +1,10 @@
 import random
 from typing import List
 
-from anagrams.board import Board
-from anagrams.exceptions import OutOfTurnFlipException
-from anagrams.letters import get_words, get_letters_order
-from anagrams.player import Player
+from .board import Board
+from .exceptions import OutOfTurnFlipException
+from .letters import get_words, get_letters_order
+from .player import Player
 
 
 class Game(object):

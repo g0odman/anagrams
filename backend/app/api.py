@@ -1,12 +1,7 @@
-import os
-
-from flask import Flask, render_template, request, flash
-
-from anagrams.game import Game
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from .game import Game
 
 app = FastAPI()
 
@@ -14,6 +9,13 @@ origins = [
     "http://localhost:3000",
     "localhost:3000"
 ]
+
+
+class temp(object):
+    form = {
+        'word-to-take': "word",
+        'word-to-steal': 'word'
+    }
 
 
 app.add_middleware(
@@ -25,41 +27,43 @@ app.add_middleware(
 )
 
 
+def create_status_code():
+    # TODO: what do I do here?
+    return {}
 
+
+@app.get("/", tags=["root"])
 async def read_root() -> dict:
     return {"message": "Welcome to your todo list."}
+
 
 game = Game(['Uri'])
 
 
 @app.post("/game/flip", tags=["root"])
-def flip():
+async def flip():
     game.flip(0)
-    return game.to_json()
+    return create_status_code()
 
 
 @app.post("/game/take", tags=["root"])
-def take():
+async def take(body: dict) -> dict:
     try:
-        game.take(0, request.form['word-to-take'])
+        game.take(0, body['takenWord'])
     except Exception as e:
-        flash(repr(e))
-    return game.to_json()
+        print(repr(e))
+    return create_status_code()
 
 
 @app.post("/game/steal", tags=["root"])
-def steal():
+async def steal(body: dict):
     try:
-        game.steal(0, 0, request.form['word-to-steal'])
+        game.steal(0, body['targetPlayer'], body['takenWord'])
     except Exception as e:
-        flash(repr(e))
+        print(repr(e))
+    return create_status_code()
+
+
+@app.get("/game/data", tags=["root"])
+async def game_data():
     return game.to_json()
-
-
-@app.route('/')
-def hello_world():
-    return game.to_json()
-
-
-if __name__ == '__main__':
-    app.run()

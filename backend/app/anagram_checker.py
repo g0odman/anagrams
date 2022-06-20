@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from anagrams.exceptions import NoStealAvaliableException
+from .exceptions import NoStealAvaliableException
 
 
 def is_word_avaliable(word: str, letters: List[str]):

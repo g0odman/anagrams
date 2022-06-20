@@ -1,8 +1,8 @@
 from typing import List
 
-from anagrams.anagram_checker import is_word_avaliable, get_steal, get_needed_letters
-from anagrams.exceptions import InvalidWordException, MissingLettersForWordException, NoLettersLeftException
-from anagrams.player import Player
+from .anagram_checker import is_word_avaliable, get_steal, get_needed_letters
+from .exceptions import InvalidWordException, MissingLettersForWordException, NoLettersLeftException
+from .player import Player
 
 class Board(object):
     def __init__(self, letter_order: List[str], dictionary: List[str]):

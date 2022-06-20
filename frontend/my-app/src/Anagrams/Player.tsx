@@ -7,7 +7,8 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 import CardContent from '@mui/material/CardContent';
-
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell'
 export interface PlayerProps {
   name: string,
   words: string[],
@@ -42,7 +43,10 @@ function Player(props: PlayerProps) {
 }
 export function PlayerList(props: { players: PlayerProps[]; }) {
   const players = props.players.map((player) => {
-    return (<Grid item><Player name={player.name} words={player.words}></Player></Grid>);
+    return (<Grid item key={player.name}>
+      <Player name={player.name} words={player.words}/>
+      </Grid>
+      );
   });
   return (<Grid container spacing={8} alignItems="center" justifyContent="center">
     {players}

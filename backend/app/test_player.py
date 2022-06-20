@@ -1,6 +1,6 @@
 import pytest
 
-from anagrams.player import Player
+from .player import Player
 
 DUMMY_NAME = 'dummy'
 DUMMY_WORD = 'dummy'

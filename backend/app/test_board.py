@@ -1,9 +1,9 @@
 import pytest
 
-from anagrams.board import Board
-from anagrams.exceptions import MissingLettersForWordException, NoLettersLeftException, InvalidWordException, \
+from .board import Board
+from .exceptions import MissingLettersForWordException, NoLettersLeftException, InvalidWordException, \
     NoStealAvaliableException
-from anagrams.player import Player
+from .player import Player
 
 DUMMY_DICTIONARY = ['fire', 'fries', 'this', 'lifers']
 DUMMY_LETTERS = ['h', 'i', 't', 's']

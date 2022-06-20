@@ -1,4 +1,4 @@
-from anagrams.game import Game
+from .game import Game
 
 game = Game(['uri'])
 for i in range(4):

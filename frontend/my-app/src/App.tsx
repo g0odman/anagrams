@@ -4,27 +4,52 @@ import { Actions } from './Anagrams/Actions';
 import { PlayerList, PlayerProps } from './Anagrams/Player';
 import { GameInfo } from './Anagrams/GameInfo';
 import { Board } from './Anagrams/Board';
+import { useEffect, useState } from 'react';
 
 
 
-interface GameProps {
+interface GameData {
   letters: string[],
   players: PlayerProps[],
+  remainingLetters: number,
+  currentPlayerID: number,
 }
 
-function Game(props: GameProps) {
+function Game(props: {gameData : GameData}) {
   return <div>
-    <GameInfo title="Anagrams" remainingLetters={12}></GameInfo>
-    <Board letters={props.letters} />
-    <PlayerList players={[{ name: "uri", words: ["abc", "bcd"] }]} />
+    <GameInfo
+      title="Anagrams"
+      remainingLetters={props.gameData.remainingLetters}
+      currentPlayerID={props.gameData.currentPlayerID} />
+    <Board letters={props.gameData.letters} />
+    <PlayerList players={props.gameData.players} />
   </div>;
 }
 
 function App() {
+  const [gameData, setGameData] = useState({
+    letters: [],
+    players: [],
+    remainingLetters: 0,
+    currentPlayerID: 0,
+  })
+  const fetchGameData= async () => {
+    const response = await fetch("http://localhost:8000/game/data")
+    const gameData = await response.json()
+    setGameData({
+      letters: gameData.boardLetters,
+      currentPlayerID: gameData.currentPlayerID,
+      players: gameData.players,
+      remainingLetters: gameData.remaininingLetters,
+    });
+  }
+  useEffect(() => {
+    fetchGameData()},
+    []);
   return (
     <div className="App">
       <header className="App-header">
-        <Game letters={['a', 'b', 'c', 'd', 'e']} players={[]}></Game>
+        <Game gameData={gameData}></Game>
         <Actions />
       </header>
     </div>
