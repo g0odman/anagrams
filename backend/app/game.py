@@ -61,8 +61,8 @@ class Game(object):
 
     def to_json(self):
         return {
-            'boardLetters': map(asdict, self.current_letters()),
-            'players': map(asdict, self.players()),
+            'boardLetters': list(map(asdict, self.current_letters())),
+            'players': list(map(asdict, self.players())),
             'remainingLetters': self.remaining_letters_count(),
             'currentPlayerID': self._current_player_id,
             'defaultPlayerID': self._default_player_id,
