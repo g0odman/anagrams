@@ -11,6 +11,7 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell'
 export interface PlayerProps {
   name: string,
+  playerID: number,
   words: string[],
 }
 
@@ -43,10 +44,10 @@ function Player(props: PlayerProps) {
 }
 export function PlayerList(props: { players: PlayerProps[]; }) {
   const players = props.players.map((player) => {
-    return (<Grid item key={player.name}>
-      <Player name={player.name} words={player.words}/>
-      </Grid>
-      );
+    return (<Grid item key={player.playerID}>
+      <Player name={player.name} words={player.words} playerID={player.playerID} />
+    </Grid>
+    );
   });
   return (<Grid container spacing={8} alignItems="center" justifyContent="center">
     {players}

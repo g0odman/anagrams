@@ -6,7 +6,9 @@ from typing import List
 @dataclass
 class Player(object):
     name: str
+    player_id: int
     words: List[str] = field(default_factory=list)
+    
 
     def add_word(self, word):
         self.words.append(word)
@@ -19,6 +21,7 @@ class Player(object):
 
     def to_json(self):
         return {
+            'playerID' : self.player_id,
             'name' : self.name,
             'words' : self.words
         }
