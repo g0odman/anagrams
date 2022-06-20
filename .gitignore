@@ -25,3 +25,4 @@ yarn-error.log*
 .idea
 *.pyc
 .pytest_cache
+/backend/venv
