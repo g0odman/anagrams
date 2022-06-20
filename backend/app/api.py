@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from backend.app.exceptions import BaseAnagramsException
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from .game import Game
 
@@ -27,12 +29,15 @@ app.add_middleware(
 )
 
 
-def create_status_code():
-    # TODO: what do I do here?
-    return {}
+@app.exception_handler(BaseAnagramsException)
+async def unicorn_exception_handler(request: Request, exc: BaseAnagramsException):
+    return JSONResponse(
+        status_code=418,
+        content={"message": f"Oops! {repr(exc)}"},
+    )
 
 
-@app.get("/", tags=["root"])
+@ app.get("/", tags=["root"])
 async def read_root() -> dict:
     return {"message": "Welcome to your todo list."}
 
@@ -40,30 +45,30 @@ async def read_root() -> dict:
 game = Game(['Uri'])
 
 
-@app.post("/game/flip", tags=["root"])
+@ app.post("/game/flip", tags=["root"])
 async def flip():
     game.flip(0)
-    return create_status_code()
+    return {}
 
 
-@app.post("/game/take", tags=["root"])
+@ app.post("/game/take", tags=["root"])
 async def take(body: dict) -> dict:
     try:
         game.take(0, body['takenWord'])
     except Exception as e:
         print(repr(e))
-    return create_status_code()
+    return {}
 
 
-@app.post("/game/steal", tags=["root"])
+@ app.post("/game/steal", tags=["root"])
 async def steal(body: dict):
     try:
         game.steal(0, body['targetPlayer'], body['takenWord'])
     except Exception as e:
         print(repr(e))
-    return create_status_code()
+    return {}
 
 
-@app.get("/game/data", tags=["root"])
+@ app.get("/game/data", tags=["root"])
 async def game_data():
     return game.to_json()
