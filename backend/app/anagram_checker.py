@@ -10,7 +10,7 @@ def is_word_avaliable(word: str, letters: List[str]):
     return True
 
 
-def get_steal(word: str, player_words: List[str], letters: List[str]) -> Optional[str]:
+def get_steal(word: str, player_words: List[str], letters: List[str]) -> str:
     for player_word in player_words:
         if len(player_word) >= len(word):
             continue
