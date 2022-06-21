@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
@@ -6,6 +6,7 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import styled from '@mui/material/styles/styled';
 import Paper from '@mui/material/Paper'
 import { PlayerProps } from './Player';
+import Alert from '@mui/material/Alert';
 
 
 const Action = styled(Paper)(({ theme }) => ({
@@ -17,17 +18,14 @@ const Action = styled(Paper)(({ theme }) => ({
     height: '100%',
     fontSize: '2.5em',
 }));
-
-class FlipAction extends React.Component {
-    constructor(props: {}) {
+type preformActionType = (url: string, body: string) => void
+class FlipAction extends React.Component<{ performAction: preformActionType }> {
+    constructor(props: { performAction: preformActionType }) {
         super(props);
         this.handleClick = this.handleClick.bind(this);
     }
     handleClick() {
-        fetch("http://localhost:8000/game/flip", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-        });
+        this.props.performAction('game/flip', '');
     }
     render() {
         return (
@@ -35,8 +33,8 @@ class FlipAction extends React.Component {
         );
     }
 }
-class TakeAction extends React.Component<{}, { takenWord: string; }> {
-    constructor(props: {}) {
+class TakeAction extends React.Component<{ performAction: preformActionType }, { takenWord: string; }> {
+    constructor(props: { performAction: preformActionType }) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -50,11 +48,7 @@ class TakeAction extends React.Component<{}, { takenWord: string; }> {
     }
     handleSubmit(event: React.SyntheticEvent) {
         console.log("Take: " + this.state.takenWord);
-        fetch("http://localhost:8000/game/take", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(this.state),
-        });
+        this.props.performAction('game/take', JSON.stringify(this.state));
         event.preventDefault();
 
     }
@@ -77,8 +71,8 @@ function PlayerSelector(props: { players: PlayerProps[], handleChange: (playerID
         </ButtonGroup>
     );
 }
-class StealAction extends React.Component<{ defaultPlayer: number, players: PlayerProps[]; }, { targetPlayer: number; takenWord: string; }> {
-    constructor(props: { defaultPlayer: number; players: PlayerProps[] }) {
+class StealAction extends React.Component<{ performAction: preformActionType, defaultPlayer: number, players: PlayerProps[]; }, { targetPlayer: number; takenWord: string; }> {
+    constructor(props: { performAction: preformActionType, defaultPlayer: number; players: PlayerProps[] }) {
         super(props);
         this.state = {
             targetPlayer: props.defaultPlayer,
@@ -90,11 +84,7 @@ class StealAction extends React.Component<{ defaultPlayer: number, players: Play
     }
     handleSubmit(event: React.SyntheticEvent) {
         console.log("Stealing " + this.state.takenWord + " from " + this.state.targetPlayer);
-        fetch("http://localhost:8000/game/steal", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(this.state),
-        });
+        this.props.performAction('game/steal', JSON.stringify(this.state));
         event.preventDefault();
     }
     handlePlayerChange(playerID: number) {
@@ -122,24 +112,43 @@ class StealAction extends React.Component<{ defaultPlayer: number, players: Play
         );
     }
 }
+
 export function Actions(props: { defaultPlayerID: number, players: PlayerProps[] }) {
-    return (<Grid container spacing={8} alignItems="center" justifyContent="center">
-        <Grid item>
-            <Action>
-                <FlipAction />
-            </Action>
+    const [errorMessage, seterrorMessage] = useState(null);
+    function performAction(url: string, body: string) {
+        console.log("Performing request to " + url)
+        fetch("http://localhost:8000/" + url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: body,
+        }).then(async response => {
+            const data = await response.json();
+
+            // check for error response
+            if (!response.ok) {
+                // get error message from body or default to response statusText
+                seterrorMessage((data && data.message) || response.statusText);
+            }
+
+        });
+    }
+    const flipAction = <FlipAction performAction={performAction} />;
+    const takeAction = <TakeAction performAction={performAction} />;
+    const stealAction = <StealAction defaultPlayer={props.defaultPlayerID} players={props.players} performAction={performAction} />;
+    const actions = [flipAction, takeAction, stealAction]
+
+    return (<div>
+        {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+        <Grid container spacing={8} alignItems="center" justifyContent="center">
+            {actions.map((action) =>
+                <Grid item key={action.type}>
+                    <Action>
+                        {action}
+                    </Action>
+                </Grid>
+            )}
         </Grid>
-        <Grid item>
-            <Action>
-                <TakeAction />
-            </Action>
-        </Grid>
-        <Grid item>
-            <Action>
-                <StealAction defaultPlayer={props.defaultPlayerID} players={props.players} />
-            </Action>
-        </Grid>
-    </Grid>
+    </div>
     );
 }
 
