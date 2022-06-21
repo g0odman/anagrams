@@ -16,12 +16,12 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 export type OrderedLetterProps = {
   letter: string,
-  letter_id: number
+  letterID: number
 }
 
 function Letter(props: OrderedLetterProps) {
   return (
-    <Grid item xs={2} key={props.letter_id}>
+    <Grid item xs={2} key={props.letterID}>
       <Item elevation={3}>
         <Typography variant="h5" component="div" sx={{ p: 2 }}>
           <strong>{props.letter.toUpperCase()}</strong>
