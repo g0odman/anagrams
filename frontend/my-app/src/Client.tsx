@@ -3,7 +3,7 @@ import './App.css';
 type setterFunction = (stateType: any) => void;
 type setErrorMessageType = (errorMessage: string) => void;
 
-export async function fetchGameData(url: string,
+export async function fetchFromServer(url: string,
     body: string,
     setErrorMessage: setErrorMessageType,
     setResponse: setterFunction) {
