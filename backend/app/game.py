@@ -1,3 +1,4 @@
+import asyncio
 import random
 from typing import List
 from dataclasses import asdict
@@ -14,18 +15,28 @@ class Game(object):
                          for player_id, name in enumerate(player_names)]
         self._current_player_id = self._choose_starting_player()
         self._default_player_id = self._choose_starting_player()
+        self._event = asyncio.Event()
 
-    def _post_take_hooks(self, player_id):
+    async def wait_for_change(self):
+        await self._event.wait()
+
+    def set_unchanged(self):
+        self._event.clear()
+
+    def _set_changed(self):
+        self._event.set()
+
+    def _end_turn_hooks(self, player_id):
         self._current_player_id = player_id
         self._default_player_id = player_id
+        self._set_changed()
 
     def _get_player(self, player_id: int):
         return self._players[player_id]
 
     def _next_player(self):
-        self._current_player_id = (
-            self._current_player_id + 1) % len(self._players)
-        print(f'{self._players[self._current_player_id].name}\'s turn')
+        next_player = (self._current_player_id + 1) % len(self._players)
+        self._end_turn_hooks(next_player)
 
     def _choose_starting_player(self):
         return random.randint(0, len(self._players) - 1)
@@ -34,12 +45,12 @@ class Game(object):
         player = self._get_player(player_id)
         target_player = self._get_player(target_player_id)
         self._board.steal_word(word, player, target_player)
-        self._post_take_hooks(player_id)
+        self._end_turn_hooks(player_id)
 
     def take(self, player_id: int, word: str):
         player = self._get_player(player_id)
         self._board.take_word(player, word)
-        self._post_take_hooks(player_id)
+        self._end_turn_hooks(player_id)
 
     def flip(self, player_id: int):
         if player_id == self._current_player_id:
@@ -61,7 +72,7 @@ class Game(object):
 
     def to_json(self):
         return {
-            'boardLetters': list(map(asdict, self.current_letters())),
+            'letters': list(map(asdict, self.current_letters())),
             'players': list(map(asdict, self.players())),
             'remainingLetters': self.remaining_letters_count(),
             'currentPlayerID': self._current_player_id,

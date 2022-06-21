@@ -73,4 +73,5 @@ async def websocket_endpoint(game_id: int, websocket: WebSocket):
     game = get_game_by_id(game_id=game_id)
     while True:
         await websocket.send_json(game.to_json())
-        await asyncio.sleep(3)
+        await game.wait_for_change()
+        game.set_unchanged()
