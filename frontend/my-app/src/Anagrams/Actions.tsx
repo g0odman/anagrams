@@ -25,7 +25,7 @@ class FlipAction extends React.Component<{ performAction: preformActionType }> {
         this.handleClick = this.handleClick.bind(this);
     }
     handleClick() {
-        this.props.performAction('game/flip', '');
+        this.props.performAction('flip', '');
     }
     render() {
         return (
@@ -48,7 +48,7 @@ class TakeAction extends React.Component<{ performAction: preformActionType }, {
     }
     handleSubmit(event: React.SyntheticEvent) {
         console.log("Take: " + this.state.takenWord);
-        this.props.performAction('game/take', JSON.stringify(this.state));
+        this.props.performAction('take', JSON.stringify(this.state));
         event.preventDefault();
 
     }
@@ -84,7 +84,7 @@ class StealAction extends React.Component<{ performAction: preformActionType, de
     }
     handleSubmit(event: React.SyntheticEvent) {
         console.log("Stealing " + this.state.takenWord + " from " + this.state.targetPlayer);
-        this.props.performAction('game/steal', JSON.stringify(this.state));
+        this.props.performAction('steal', JSON.stringify(this.state));
         event.preventDefault();
     }
     handlePlayerChange(playerID: number) {
@@ -113,11 +113,11 @@ class StealAction extends React.Component<{ performAction: preformActionType, de
     }
 }
 
-export function Actions(props: { defaultPlayerID: number, players: PlayerProps[] }) {
+export function Actions(props: { gameID: number, defaultPlayerID: number, players: PlayerProps[] }) {
     const [errorMessage, seterrorMessage] = useState(null);
     function performAction(url: string, body: string) {
         console.log("Performing request to " + url)
-        fetch("http://localhost:8000/" + url, {
+        fetch("http://localhost:8000/game/" + props.gameID + "/" + url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: body,

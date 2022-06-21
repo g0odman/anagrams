@@ -28,6 +28,7 @@ function Game(props: { gameData: GameData }) {
 }
 
 function App() {
+  let gameID = 0
   const [gameData, setGameData] = useState({
     letters: [],
     players: [],
@@ -36,7 +37,7 @@ function App() {
     defaultPlayerID: 0
   });
   const fetchGameData = async () => {
-    const response = await fetch("http://localhost:8000/game/data")
+    const response = await fetch("http://localhost:8000/game/" + gameID + "/data")
     const gameData = await response.json()
     setGameData({
       letters: gameData.boardLetters,
@@ -54,7 +55,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <Game gameData={gameData}></Game>
-        <Actions players={gameData.players} defaultPlayerID={gameData.defaultPlayerID} />
+        <Actions players={gameData.players} defaultPlayerID={gameData.defaultPlayerID} gameID={gameID} />
       </header>
     </div>
   );
