@@ -76,7 +76,7 @@ function App() {
   } else {
     display = (<Alert severity="error">
       <AlertTitle>Error</AlertTitle>
-      This is an error alert — <strong>check it out!</strong>
+      This is an error alert — <strong>{errorMessage}</strong>
     </Alert>);
   }
   return (
