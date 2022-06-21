@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Request
+import asyncio
+from fastapi import FastAPI, Request, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -64,3 +65,12 @@ async def steal(game_id: int, body: dict):
 async def game_data(game_id: int):
     game = get_game_by_id(game_id)
     return game.to_json()
+
+
+@app.websocket("/game/{game_id}/ws")
+async def websocket_endpoint(game_id: int, websocket: WebSocket):
+    await websocket.accept()
+    game = get_game_by_id(game_id=game_id)
+    while True:
+        await websocket.send_json(game.to_json())
+        await asyncio.sleep(3)
