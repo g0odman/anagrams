@@ -42,7 +42,7 @@ function App() {
       letters: gameData.boardLetters,
       currentPlayerID: gameData.currentPlayerID,
       players: gameData.players,
-      remainingLetters: gameData.remaininingLetters,
+      remainingLetters: gameData.remainingLetters,
       defaultPlayerID: gameData.defaultPlayerID
     });
   }
