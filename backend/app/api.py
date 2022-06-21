@@ -2,6 +2,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from .game_manager import get_game_by_id
+
 from .exceptions import BaseAnagramsException
 from .game import Game
 
@@ -28,8 +30,6 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-game = Game(['Uri'])
-
 
 @app.exception_handler(BaseAnagramsException)
 async def unicorn_exception_handler(request: Request, exc: BaseAnagramsException):
@@ -39,24 +39,28 @@ async def unicorn_exception_handler(request: Request, exc: BaseAnagramsException
     )
 
 
-@ app.post("/game/flip", tags=["root"])
-async def flip():
+@ app.post("/game/{game_id}/flip", tags=["root"])
+async def flip(game_id: int):
+    game = get_game_by_id(game_id)
     game.flip(0)
     return {}
 
 
-@ app.post("/game/take", tags=["root"])
-async def take(body: dict) -> dict:
+@ app.post("/game/{game_id}/take", tags=["root"])
+async def take(game_id: int, body: dict) -> dict:
+    game = get_game_by_id(game_id)
     game.take(0, body['takenWord'])
     return {}
 
 
-@ app.post("/game/steal", tags=["root"])
-async def steal(body: dict):
+@app.post("/game/{game_id}/steal", tags=["root"])
+async def steal(game_id: int, body: dict):
+    game = get_game_by_id(game_id)
     game.steal(0, body['targetPlayer'], body['takenWord'])
     return {}
 
 
-@ app.get("/game/data", tags=["root"])
-async def game_data():
+@ app.get("/game/{game_id}/data", tags=["root"])
+async def game_data(game_id: int):
+    game = get_game_by_id(game_id)
     return game.to_json()

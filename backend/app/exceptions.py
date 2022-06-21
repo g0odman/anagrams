@@ -2,6 +2,10 @@ class BaseAnagramsException(Exception):
     pass
 
 
+class NonExistentGameException(BaseAnagramsException):
+    pass
+
+
 class InvalidStealException(BaseAnagramsException):
     pass
 
