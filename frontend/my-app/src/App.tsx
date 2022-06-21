@@ -39,32 +39,24 @@ function App() {
     currentPlayerID: 0,
     defaultPlayerID: 0
   });
-  const fetchGameData = async () => {
-    fetch("http://localhost:8000/game/" + gameID + "/data").then(async response => {
-      const gameData = await response.json()
 
-      // check for error response
-      if (!response.ok) {
-        // get error message from body or default to response statusText
-        setErrorMessage((gameData && gameData.message) || response.statusText);
-
-      } else {
-        setGameData({
-          letters: gameData.boardLetters,
-          currentPlayerID: gameData.currentPlayerID,
-          players: gameData.players,
-          remainingLetters: gameData.remainingLetters,
-          defaultPlayerID: gameData.defaultPlayerID
-        })
-      }
-      ;
-
-    })
-  }
+  // useEffect(() => {
+  //   fetchFromServer("game/" + gameID + "/data", "", setErrorMessage, setGameData);
+  // }, []);
   useEffect(() => {
-    fetchGameData()
-  },
-    []);
+    const url = "ws://localhost:8000/game/" + gameID + "/ws";
+    const ws = new WebSocket(url);
+
+    // recieve message every start page
+    ws.onmessage = (e) => {
+      const receivedGameData = JSON.parse(e.data);
+      setGameData(receivedGameData);
+    };
+
+    //clean up function when we close page
+    return () => ws.close();
+  }, []);
+
   let display: JSX.Element;
   if (!errorMessage) {
     display = (
