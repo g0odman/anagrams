@@ -1,4 +1,11 @@
+from lib2to3.pytree import Base
+
+
 class BaseAnagramsException(Exception):
+    pass
+
+
+class NonAlphabeticStringsException(BaseAnagramsException):
     pass
 
 

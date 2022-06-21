@@ -3,7 +3,7 @@ import random
 from typing import List
 from dataclasses import asdict
 from .board import Board
-from .exceptions import OutOfTurnFlipException
+from .exceptions import NonAlphabeticStringsException, OutOfTurnFlipException
 from .game_setup import get_words, get_letters_order
 from .player import Player
 
@@ -19,8 +19,6 @@ class Game(object):
 
     async def wait_for_change(self):
         await self._event.wait()
-
-    def set_unchanged(self):
         self._event.clear()
 
     def _set_changed(self):
@@ -41,13 +39,21 @@ class Game(object):
     def _choose_starting_player(self):
         return random.randint(0, len(self._players) - 1)
 
+    @staticmethod
+    def sanitize_word(word: str):
+        if not word.isalpha():
+            raise NonAlphabeticStringsException(word)
+        return word.lower()
+
     def steal(self, player_id, target_player_id, word):
+        word = self.sanitize_word(word)
         player = self._get_player(player_id)
         target_player = self._get_player(target_player_id)
         self._board.steal_word(word, player, target_player)
         self._end_turn_hooks(player_id)
 
     def take(self, player_id: int, word: str):
+        word = self.sanitize_word(word)
         player = self._get_player(player_id)
         self._board.take_word(player, word)
         self._end_turn_hooks(player_id)
@@ -55,7 +61,6 @@ class Game(object):
     def flip(self, player_id: int):
         if player_id == self._current_player_id:
             result = self._board.flip_letter()
-            print('Revealed letter:', result)
             self._next_player()
             return result
         raise OutOfTurnFlipException(

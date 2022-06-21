@@ -49,13 +49,14 @@ class TakeAction extends React.Component<{ performAction: preformActionType }, {
     handleSubmit(event: React.SyntheticEvent) {
         console.log("Take: " + this.state.takenWord);
         this.props.performAction('take', JSON.stringify(this.state));
+        this.setState({ takenWord: "" });
         event.preventDefault();
 
     }
     render() {
         return (
             <form onSubmit={this.handleSubmit}>
-                <TextField id="outlined-basic" label="take" variant="outlined" onChange={this.handleChange} />
+                <TextField id="outlined-basic" label="take" variant="outlined" onChange={this.handleChange} value={this.state.takenWord} />
                 <Button type="submit" variant="contained">Take</Button>
             </form>
         );
@@ -85,6 +86,7 @@ class StealAction extends React.Component<{ performAction: preformActionType, de
     handleSubmit(event: React.SyntheticEvent) {
         console.log("Stealing " + this.state.takenWord + " from " + this.state.targetPlayer);
         this.props.performAction('steal', JSON.stringify(this.state));
+        this.setState({ takenWord: "" });
         event.preventDefault();
     }
     handlePlayerChange(playerID: number) {
@@ -101,7 +103,12 @@ class StealAction extends React.Component<{ performAction: preformActionType, de
         return (
             <form onSubmit={this.handleSubmit}>
                 <div>
-                    <TextField id="outlined-basic" label="steal" variant="outlined" onChange={this.handleWordChange} />
+                    <TextField
+                        id="outlined-basic"
+                        label="steal"
+                        variant="outlined"
+                        onChange={this.handleWordChange}
+                        value={this.state.takenWord} />
                     <PlayerSelector players={this.props.players} handleChange={this.handlePlayerChange} />
                 </div>
                 <br />
