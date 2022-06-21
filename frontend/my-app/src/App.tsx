@@ -5,6 +5,8 @@ import { PlayerList, PlayerProps } from './Anagrams/Player';
 import { GameInfo } from './Anagrams/GameInfo';
 import { Board, OrderedLetterProps } from './Anagrams/Board';
 import { useEffect, useState } from 'react';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 
 
 
@@ -29,6 +31,7 @@ function Game(props: { gameData: GameData }) {
 
 function App() {
   let gameID = 0
+  const [errorMessage, setErrorMessage] = useState("");
   const [gameData, setGameData] = useState({
     letters: [],
     players: [],
@@ -37,25 +40,49 @@ function App() {
     defaultPlayerID: 0
   });
   const fetchGameData = async () => {
-    const response = await fetch("http://localhost:8000/game/" + gameID + "/data")
-    const gameData = await response.json()
-    setGameData({
-      letters: gameData.boardLetters,
-      currentPlayerID: gameData.currentPlayerID,
-      players: gameData.players,
-      remainingLetters: gameData.remainingLetters,
-      defaultPlayerID: gameData.defaultPlayerID
-    });
+    fetch("http://localhost:8000/game/" + gameID + "/data").then(async response => {
+      const gameData = await response.json()
+
+      // check for error response
+      if (!response.ok) {
+        // get error message from body or default to response statusText
+        setErrorMessage((gameData && gameData.message) || response.statusText);
+
+      } else {
+        setGameData({
+          letters: gameData.boardLetters,
+          currentPlayerID: gameData.currentPlayerID,
+          players: gameData.players,
+          remainingLetters: gameData.remainingLetters,
+          defaultPlayerID: gameData.defaultPlayerID
+        })
+      }
+      ;
+
+    })
   }
   useEffect(() => {
     fetchGameData()
   },
     []);
+  let display: JSX.Element;
+  if (!errorMessage) {
+    display = (
+      <div>
+        <Game gameData={gameData}></Game>
+        <Actions players={gameData.players} defaultPlayerID={gameData.defaultPlayerID} gameID={gameID} />
+      </div>
+    );
+  } else {
+    display = (<Alert severity="error">
+      <AlertTitle>Error</AlertTitle>
+      This is an error alert — <strong>check it out!</strong>
+    </Alert>);
+  }
   return (
     <div className="App">
       <header className="App-header">
-        <Game gameData={gameData}></Game>
-        <Actions players={gameData.players} defaultPlayerID={gameData.defaultPlayerID} gameID={gameID} />
+        {display}
       </header>
     </div>
   );
