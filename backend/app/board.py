@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Set
 
 from .anagram_checker import is_word_avaliable, get_steal, get_needed_letters
 from .exceptions import InvalidWordException, MissingLettersForWordException, NoLettersLeftException
@@ -13,7 +13,7 @@ class OrderedLetter(object):
 
 
 class Board(object):
-    def __init__(self, letter_order: List[str], dictionary: List[str]):
+    def __init__(self, letter_order: List[str], dictionary: Set[str]):
         self._remainining_letters = [OrderedLetter(
             letter, letterID) for letterID, letter in enumerate(letter_order)]
         self._dictionary = dictionary

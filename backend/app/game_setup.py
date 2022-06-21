@@ -35,4 +35,4 @@ def _read_words():
 
 
 def get_words():
-    return list(filter(word_filter, _read_words()))
+    return set(filter(word_filter, _read_words()))
