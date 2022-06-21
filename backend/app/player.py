@@ -6,7 +6,7 @@ from typing import List
 @dataclass
 class Player(object):
     name: str
-    player_id: int
+    playerID: int
     words: List[str] = field(default_factory=list)
 
     def add_word(self, word):

@@ -10,7 +10,7 @@ from .player import Player
 class Game(object):
     def __init__(self, player_names: List[str]):
         self._board = Board(get_letters_order(), get_words())
-        self._players = [Player(name=name, player_id=player_id + 1)
+        self._players = [Player(name=name, playerID=player_id + 1)
                          for player_id, name in enumerate(player_names)]
         self._current_player_id = self._choose_starting_player()
         self._default_player_id = self._choose_starting_player()

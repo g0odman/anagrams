@@ -9,13 +9,13 @@ from .player import Player
 @dataclass
 class OrderedLetter(object):
     letter: str
-    letter_id: int
+    letterID: int
 
 
 class Board(object):
     def __init__(self, letter_order: List[str], dictionary: List[str]):
         self._remainining_letters = [OrderedLetter(
-            letter, letter_id) for letter_id, letter in enumerate(letter_order)]
+            letter, letterID) for letterID, letter in enumerate(letter_order)]
         self._dictionary = dictionary
         self._current_letters = list()  # type: list[OrderedLetter]
 
