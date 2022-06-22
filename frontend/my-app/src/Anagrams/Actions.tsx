@@ -132,6 +132,7 @@ export function Actions(props: { gameID: number, defaultPlayerID: number, player
             const data = await response.json();
 
             // check for error response
+            seterrorMessage('');
             if (!response.ok) {
                 // get error message from body or default to response statusText
                 seterrorMessage((data && data.message) || response.statusText);
