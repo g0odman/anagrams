@@ -7,7 +7,7 @@ import { postToServer } from "../Client";
 import "./Login.css";
 
 type setErrorMessageType = React.Dispatch<React.SetStateAction<string>>;
-type setGameIDType = React.Dispatch<React.SetStateAction<number>>;
+type setGameIDType = React.Dispatch<React.SetStateAction<number | null>>;
 type GameCreationProps = { playerID: number, setGameID: setGameIDType, setErrorMessage: setErrorMessageType }
 
 function CreateGameForm(props: GameCreationProps) {
@@ -51,12 +51,11 @@ export function JoinGameForm(props: GameCreationProps) {
     );
 }
 
-export function LobbyForm(props: { playerID: number }) {
-    const [gameID, setGameID] = useState(0);
+export function LobbyForm(props: { playerID: number, setGameID: setGameIDType }) {
     const [errorMessage, setErrorMessage] = useState("");
     const gameCreationProps = {
         playerID: props.playerID,
-        setGameID: setGameID,
+        setGameID: props.setGameID,
         setErrorMessage: setErrorMessage
     }
     return (

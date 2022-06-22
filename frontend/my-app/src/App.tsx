@@ -1,12 +1,15 @@
 import './App.css';
 
-import { Actions } from './Anagrams/Actions';
-import { PlayerList, PlayerProps } from './Anagrams/Player';
-import { GameInfo } from './Anagrams/GameInfo';
-import { Board, OrderedLetterProps } from './Anagrams/Board';
-import { useEffect, useState } from 'react';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
+import { useEffect, useState } from 'react';
+import { Actions } from './Anagrams/Actions';
+import { Board, OrderedLetterProps } from './Anagrams/Board';
+import { GameInfo } from './Anagrams/GameInfo';
+import { PlayerList, PlayerProps } from './Anagrams/Player';
+import { LobbyForm } from './Lobby/Lobby';
+import { LoginForm } from './Lobby/Login';
+import usePlayerID from './Lobby/useToken';
 
 
 
@@ -18,7 +21,7 @@ type GameData = {
   defaultPlayerID: number
 }
 
-function Game(props: { gameData: GameData }) {
+function RunningGame(props: { gameData: GameData }) {
   return <div>
     <GameInfo
       title="Anagrams"
@@ -28,9 +31,7 @@ function Game(props: { gameData: GameData }) {
     <PlayerList players={props.gameData.players} />
   </div>;
 }
-
-function App() {
-  let gameID = 0
+function Game(props: { playerID: number, gameID: number }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [gameData, setGameData] = useState({
     letters: [],
@@ -44,7 +45,7 @@ function App() {
   //   fetchFromServer("game/" + gameID + "/data", "", setErrorMessage, setGameData);
   // }, []);
   useEffect(() => {
-    const url = "ws://localhost:8000/game/" + gameID + "/ws";
+    const url = "ws://localhost:8000/game/" + props.gameID + "/ws";
     const ws = new WebSocket(url);
 
     // recieve message every start page
@@ -57,24 +58,38 @@ function App() {
     return () => ws.close();
   }, []);
 
-  let display: JSX.Element;
   if (!errorMessage) {
-    display = (
+    return (
       <div>
-        <Game gameData={gameData}></Game>
-        <Actions players={gameData.players} defaultPlayerID={gameData.defaultPlayerID} gameID={gameID} />
+        <RunningGame gameData={gameData}></RunningGame >
+        <Actions players={gameData.players} defaultPlayerID={gameData.defaultPlayerID} gameID={props.gameID} />
       </div>
     );
   } else {
-    display = (<Alert severity="error">
+    return (<Alert severity="error">
       <AlertTitle>Error</AlertTitle>
       This is an error alert — <strong>{errorMessage}</strong>
     </Alert>);
   }
+}
+
+function MyRouter(props: {}) {
+  const { playerID, setPlayerID } = usePlayerID();
+  const [gameID, setGameID] = useState<number | null>(null);
+  if (!playerID) {
+    return (<LoginForm setPlayerID={setPlayerID}></LoginForm>);
+  }
+  if (!gameID) {
+    return <LobbyForm playerID={playerID} setGameID={setGameID}></LobbyForm>
+  }
+  return <Game playerID={playerID} gameID={gameID}></Game>
+}
+function App() {
+
   return (
     <div className="App">
       <header className="App-header">
-        {display}
+        <MyRouter></MyRouter>
       </header>
     </div>
   );
