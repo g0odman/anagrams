@@ -58,52 +58,40 @@ function PlayerSelector(props: { players: PlayerProps[], handleChange: (playerID
         </ButtonGroup>
     );
 }
-class StealAction extends React.Component<{ performAction: preformActionType, defaultPlayer: number, players: PlayerProps[]; }, { targetPlayer: number; takenWord: string; }> {
-    constructor(props: { performAction: preformActionType, defaultPlayer: number; players: PlayerProps[] }) {
-        super(props);
-        this.state = {
-            targetPlayer: props.defaultPlayer,
-            takenWord: ""
-        };
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.handlePlayerChange = this.handlePlayerChange.bind(this);
-        this.handleWordChange = this.handleWordChange.bind(this);
-    }
-    handleSubmit(event: React.SyntheticEvent) {
-        this.props.performAction('/steal', this.state);
-        this.setState({ takenWord: "" });
+function StealAction(props: { performAction: preformActionType, defaultPlayer: number, players: PlayerProps[] }) {
+    const [targetPlayer, setTargetPlayer] = useState(props.defaultPlayer);
+    const [takenWord, setTakenWord] = useState("")
+    const handleSubmit = (event: React.SyntheticEvent) => {
+        props.performAction('/steal', { targetPlayer: targetPlayer, takenWord: takenWord });
+        setTakenWord('');
         event.preventDefault();
     }
-    handlePlayerChange(playerID: number) {
-        console.log("Moved player to: " + playerID);
-        this.setState({ targetPlayer: +playerID });
+    const handlePlayerChange = (playerID: number) => {
+        setTargetPlayer(playerID);
     }
-    handleWordChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
-        console.log("Changed word to: " + event.target.value);
-        this.setState({ takenWord: event.target.value });
+    const handleWordChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         event.preventDefault();
+        setTakenWord(event.target.value);
     }
-
-    render() {
-        return (
-            <form onSubmit={this.handleSubmit}>
-                <div>
-                    <TextField
-                        id="outlined-basic"
-                        label="steal"
-                        variant="outlined"
-                        onChange={this.handleWordChange}
-                        value={this.state.takenWord} />
-                    <PlayerSelector players={this.props.players} handleChange={this.handlePlayerChange} />
-                </div>
-                <br />
-                <div>
-                    <Button type="submit" variant="contained">Steal</Button>
-                </div>
-            </form>
-        );
-    }
+    return (
+        <form onSubmit={handleSubmit}>
+            <div>
+                <TextField
+                    id="outlined-basic"
+                    label="steal"
+                    variant="outlined"
+                    onChange={handleWordChange}
+                    value={takenWord} />
+                <PlayerSelector players={props.players} handleChange={handlePlayerChange} />
+            </div>
+            <br />
+            <div>
+                <Button type="submit" variant="contained">Steal</Button>
+            </div>
+        </form>
+    );
 }
+
 
 export function Actions(props: { gameID: number, playerID: number, defaultPlayerID: number, players: PlayerProps[] }) {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
