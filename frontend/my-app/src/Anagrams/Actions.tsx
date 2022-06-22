@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import styled from '@mui/material/styles/styled';
-import Paper from '@mui/material/Paper'
-import { PlayerProps } from './Player';
 import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import styled from '@mui/material/styles/styled';
+import TextField from '@mui/material/TextField';
+import React, { useState } from 'react';
 import { postToServer } from '../Client';
+import { PlayerProps } from './Player';
 
 
 const Action = styled(Paper)(({ theme }) => ({
@@ -108,15 +108,18 @@ export function Actions(props: { gameID: number, playerID: number, defaultPlayer
 
     return (<div>
         {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-        <Grid container spacing={8} alignItems="center" justifyContent="center">
+        <Stack
+            sx={{ pt: 4 }}
+            direction="row"
+            spacing={2}
+            justifyContent="center"
+        >
             {actions.map((action) =>
-                <Grid item key={action.type}>
-                    <Action>
-                        {action}
-                    </Action>
-                </Grid>
+                <Action key={action.type}>
+                    {action}
+                </Action>
             )}
-        </Grid>
+        </Stack>
     </div>
     );
 }

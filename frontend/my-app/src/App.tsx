@@ -1,77 +1,18 @@
-import './App.css';
 
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
+import AbcIcon from '@mui/icons-material/Abc';
+import AppBar from '@mui/material/AppBar';
+import CssBaseline from '@mui/material/CssBaseline';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
 import { useEffect, useState } from 'react';
-import { Actions } from './Anagrams/Actions';
-import { Board, OrderedLetterProps } from './Anagrams/Board';
-import { GameInfo } from './Anagrams/GameInfo';
-import { PlayerList, PlayerProps } from './Anagrams/Player';
 import { LobbyForm } from './Lobby/Lobby';
 import { LoginForm } from './Lobby/Login';
 import { getGameID, usePlayerID } from './Lobby/useToken';
+import { Game } from './Anagrams/Game'
 
 
-
-type GameData = {
-  letters: OrderedLetterProps[],
-  players: PlayerProps[],
-  remainingLetters: number,
-  currentPlayerID: number,
-  defaultPlayerID: number
-}
-
-function RunningGame(props: { gameData: GameData }) {
-  return <div>
-    <GameInfo
-      title="Anagrams"
-      remainingLetters={props.gameData.remainingLetters}
-      currentPlayerID={props.gameData.currentPlayerID} />
-    <Board letters={props.gameData.letters} />
-    <PlayerList players={props.gameData.players} />
-  </div>;
-}
-function Game(props: { playerID: number, gameID: number }) {
-  const [errorMessage] = useState("");
-  const [gameData, setGameData] = useState({
-    letters: [],
-    players: [],
-    remainingLetters: 0,
-    currentPlayerID: 0,
-    defaultPlayerID: 0
-  });
-
-  // useEffect(() => {
-  //   fetchFromServer("game/" + gameID + "/data", "", setErrorMessage, setGameData);
-  // }, []);
-  useEffect(() => {
-    const url = "ws://localhost:8000/game/" + props.gameID + "/ws";
-    const ws = new WebSocket(url);
-
-    // recieve message every start page
-    ws.onmessage = (e) => {
-      const receivedGameData = JSON.parse(e.data);
-      setGameData(receivedGameData);
-    };
-
-    //clean up function when we close page
-    return () => ws.close();
-  }, [props.gameID]);
-
-  if (!errorMessage) {
-    return (
-      <div>
-        <RunningGame gameData={gameData}></RunningGame >
-        <Actions players={gameData.players} defaultPlayerID={gameData.defaultPlayerID} gameID={props.gameID} playerID={props.playerID} />
-      </div>
-    );
-  } else {
-    return (<Alert severity="error">
-      <AlertTitle>Error</AlertTitle>
-      This is an error alert — <strong>{errorMessage}</strong>
-    </Alert>);
-  }
-}
+const theme = createTheme();
 
 function MyRouter(props: {}) {
   const { playerID, setPlayerID } = usePlayerID();
@@ -98,11 +39,18 @@ function MyRouter(props: {}) {
 function App() {
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <MyRouter></MyRouter>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AppBar position="relative">
+        <Toolbar>
+          <AbcIcon sx={{ mr: 4 }}></AbcIcon>
+          <Typography variant="h6" color="inherit" noWrap>
+            Anagrams Game
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <MyRouter></MyRouter>
+    </ThemeProvider>
   );
 }
 
