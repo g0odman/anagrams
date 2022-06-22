@@ -1,38 +1,38 @@
+import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
 import Input from "@mui/material/Input";
 import InputLabel from "@mui/material/InputLabel";
+import TextField from "@mui/material/TextField";
 import React, { useState } from "react";
+import { postToServer } from "../Client";
 import "./Login.css";
 
-export default function Login() {
-    const [userName, setUserName] = useState("");
+export function LoginForm(props: { setPlayerID: (playerID: number) => void }) {
+    const [playerName, setPlayerName] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
 
-    function validateForm() {
-        return userName.length > 0;
-    }
-    function handleChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
-        setUserName(event.target.value)
-    }
-    function handleSubmit(event: React.SyntheticEvent) {
-        console.log("Logging into " + userName);
+    async function handleSubmit(event: React.SyntheticEvent) {
+        setErrorMessage('')
+        const data = await postToServer('/player/create',
+            JSON.stringify({ playerName: playerName }),
+            setErrorMessage)
+        if (data) {
+            localStorage.setItem('playerID', data.playerID);
+            props.setPlayerID(data.playerID);
+        }
         event.preventDefault();
     }
-
+    function handleChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
+        setPlayerName(event.target.value);
+        event.preventDefault();
+    }
     return (
-        <div className="Login">
-            <form onSubmit={handleSubmit}>
-                <FormControl>
-                    <InputLabel htmlFor="my-input">User Name</InputLabel>
-                    <Input id="my-input" aria-describedby="my-helper-text" onChange={handleChange} />
-                    <FormHelperText id="my-helper-text">We'll never share your email.</FormHelperText>
-                </FormControl>
-
-                <Button type="submit" disabled={!validateForm()}>
-                    Login
-                </Button>
-            </form>
-        </div>
+        <form onSubmit={handleSubmit}>
+            {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+            <TextField id="outlined-basic" label="take" variant="outlined" onChange={handleChange} value={playerName} />
+            <Button type="submit" variant="contained">Take</Button>
+        </form>
     );
 }
