@@ -22,7 +22,7 @@ def create_game_by_creator(player_id: int):
     _games[game_id] = Game(player_id)
 
 
-def join_game(game_id: int, player_id: int):
+def add_player_to_game(player_id: int, game_id: int):
     if _games_by_player.get(player_id, None) == game_id:
         # Already joined
         raise AlreadyJoinedException(player_id)
@@ -32,7 +32,20 @@ def join_game(game_id: int, player_id: int):
     _games_by_player[player_id] = game_id
 
 
+def remove_player_from_game(player_id: int, game_id: int):
+    if _games_by_player.get(player_id, None) != game_id:
+        # Already joined
+        raise AlreadyJoinedException(player_id)
+    game = get_game_by_id(game_id)
+    game.remove_player(player_id)
+    del _games[player_id]
+
+
 def get_game_id_by_player(player_id: int):
-    if player_id not in _games_by_player:
+    if not is_player_in_game(player_id=player_id):
         raise NonExistentGameException(player_id)
     return _games_by_player[player_id]
+
+
+def is_player_in_game(player_id):
+    return player_id in _games_by_player

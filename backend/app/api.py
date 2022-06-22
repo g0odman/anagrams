@@ -4,9 +4,9 @@ from fastapi import Cookie, FastAPI, Request, WebSocket, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from backend.app.player_manager import create_player_from_name
+from backend.app.player_manager import create_player_from_name, get_player_by_id
 
-from .game_manager import create_game_by_creator, get_game_by_id
+from .game_manager import add_player_to_game, create_game_by_creator, get_game_by_id, remove_player_from_game
 
 from .exceptions import BaseAnagramsException
 from .game import Game
@@ -65,10 +65,17 @@ async def steal(game_id: int, body: dict):
 
 
 @app.post("/game/{game_id}/join", tags=["root"])
-async def join_game(game_id: int, playerID: Union[str, None] = Cookie(default=None)):
-    assert playerID is not None
-    game = get_game_by_id(game_id=game_id)
-    game.add_player(player_id=int(playerID))
+async def join_game(game_id: int, body: dict):
+    player_id = body['playerID']
+    add_player_to_game(player_id, game_id)
+    return {}
+
+
+@app.post("/game/{game_id}/leave", tags=["root"])
+async def leave_game(game_id: int, body: dict):
+    player_id = body['playerID']
+    remove_player_from_game(player_id, game_id)
+    return {}
 
 
 @app.post("/game/create", tags=["root"])
@@ -81,8 +88,19 @@ async def create_game(playerID: Union[str, None] = Cookie(default=None)):
 @app.post("/player/create", tags=["root"])
 async def create_player(body: dict, response: Response):
     player_id = create_player_from_name(body['playerName'])
-    response.set_cookie(key="playerID", value=str(player_id))
-    return {}
+    return {'playerID': player_id}
+
+
+@app.post("/player/{player_id}/name", tags=["root"])
+async def get_player_name(player_id: int):
+    player = get_player_by_id(player_id=player_id)
+    return {'playerName': player.name}
+
+
+@app.post("/player/{player_id}/delete", tags=["root"])
+async def delete_player(player_id: int):
+    player = get_player_by_id(player_id=player_id)
+    return {'playerName': player.name}
 
 
 @app.websocket("/game/{game_id}/ws")
