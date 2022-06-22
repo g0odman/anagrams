@@ -2,20 +2,23 @@ import asyncio
 import random
 from typing import List
 from dataclasses import asdict
+
+from backend.app.player_manager import get_player_by_id
 from .board import Board
-from .exceptions import NonAlphabeticStringsException, OutOfTurnFlipException
+from .exceptions import NonAlphabeticStringsException, NonExistentPlayerException, OutOfTurnFlipException
 from .game_setup import get_words, get_letters_order
 from .player import Player
 
 
 class Game(object):
-    def __init__(self, player_names: List[str]):
+    def __init__(self, creator_id: int):
+        self._creator_id = creator_id
         self._board = Board(get_letters_order(), get_words())
-        self._players = [Player(name=name, playerID=player_id + 1)
-                         for player_id, name in enumerate(player_names)]
+        self._players = []  # type: list[Player]
         self._current_player_id = self._choose_starting_player()
         self._default_player_id = self._choose_starting_player()
         self._event = asyncio.Event()
+        self.add_player(creator_id)
 
     async def wait_for_change(self):
         await self._event.wait()
@@ -24,13 +27,24 @@ class Game(object):
     def _set_changed(self):
         self._event.set()
 
-    def _end_turn_hooks(self, player_id):
+    def _end_turn_hooks(self, player_id: int):
         self._current_player_id = player_id
         self._default_player_id = player_id
         self._set_changed()
 
+    def add_player(self, player_id: int):
+        player = get_player_by_id(player_id=player_id)
+        self._players.append(player)
+
+    def remove_player(self, player_id: int):
+        player = get_player_by_id(player_id=player_id)
+        self._players.append(player)
+
     def _get_player(self, player_id: int):
-        return self._players[player_id]
+        player = get_player_by_id(player_id=player_id)
+        if player not in self._players:
+            raise NonExistentPlayerException(player_id)
+        return player
 
     def _next_player(self):
         next_player = (self._current_player_id + 1) % len(self._players)
@@ -45,7 +59,7 @@ class Game(object):
             raise NonAlphabeticStringsException(word)
         return word.lower()
 
-    def steal(self, player_id, target_player_id, word):
+    def steal(self, player_id: int, target_player_id: int, word: str):
         word = self.sanitize_word(word)
         player = self._get_player(player_id)
         target_player = self._get_player(target_player_id)
