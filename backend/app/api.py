@@ -1,9 +1,12 @@
 import asyncio
-from fastapi import FastAPI, Request, WebSocket
+from typing import Union
+from fastapi import Cookie, FastAPI, Request, WebSocket, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from .game_manager import get_game_by_id
+from backend.app.player_manager import create_player_from_name
+
+from .game_manager import create_game_by_creator, get_game_by_id
 
 from .exceptions import BaseAnagramsException
 from .game import Game
@@ -33,7 +36,7 @@ app.add_middleware(
 
 
 @app.exception_handler(BaseAnagramsException)
-async def unicorn_exception_handler(request: Request, exc: BaseAnagramsException):
+async def anagrams_exception_handler(request: Request, exc: BaseAnagramsException):
     return JSONResponse(
         status_code=418,
         content={"message": f"Oops! {repr(exc)}"},
@@ -61,10 +64,25 @@ async def steal(game_id: int, body: dict):
     return {}
 
 
-@ app.get("/game/{game_id}/data", tags=["root"])
-async def game_data(game_id: int):
-    game = get_game_by_id(game_id)
-    return game.to_json()
+@app.post("/game/{game_id}/join", tags=["root"])
+async def join_game(game_id: int, playerID: Union[str, None] = Cookie(default=None)):
+    assert playerID is not None
+    game = get_game_by_id(game_id=game_id)
+    game.add_player(player_id=int(playerID))
+
+
+@app.post("/game/create", tags=["root"])
+async def create_game(playerID: Union[str, None] = Cookie(default=None)):
+    assert playerID is not None
+    game_id = create_game_by_creator(int(playerID))
+    return {'gameID': game_id}
+
+
+@app.post("/player/create", tags=["root"])
+async def create_player(body: dict, response: Response):
+    player_id = create_player_from_name(body['playerName'])
+    response.set_cookie(key="playerID", value=str(player_id))
+    return {}
 
 
 @app.websocket("/game/{game_id}/ws")

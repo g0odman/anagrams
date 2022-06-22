@@ -39,3 +39,7 @@ class MissingLettersForWordException(BaseAnagramsException):
 
 class NoLettersLeftException(BaseAnagramsException):
     pass
+
+
+class AlreadyJoinedException(BaseAnagramsException):
+    pass
