@@ -44,30 +44,29 @@ async def anagrams_exception_handler(request: Request, exc: BaseAnagramsExceptio
     )
 
 
-@ app.post("/game/{game_id}/flip", tags=["root"])
-async def flip(game_id: int):
-    game = get_game_by_id(game_id)
-    game.flip(0)
+@app.post("/game/flip", tags=["root"])
+async def flip(body: dict):
+    game = get_game_by_id(body['gameID'])
+    game.flip(body['playerID'])
     return {}
 
 
-@ app.post("/game/{game_id}/take", tags=["root"])
-async def take(game_id: int, body: dict) -> dict:
-    game = get_game_by_id(game_id)
-    game.take(0, body['takenWord'])
+@app.post("/game/take", tags=["root"])
+async def take(body: dict) -> dict:
+    game = get_game_by_id(body['gameID'])
+    game.take(body['playerID'], body['takenWord'])
     return {}
 
 
-@app.post("/game/{game_id}/steal", tags=["root"])
-async def steal(game_id: int, body: dict):
-    game = get_game_by_id(game_id)
-    game.steal(0, body['targetPlayer'], body['takenWord'])
+@app.post("/game/steal", tags=["root"])
+async def steal(body: dict):
+    game = get_game_by_id(body['gameID'])
+    game.steal(body['playerID'], body['targetPlayer'], body['takenWord'])
     return {}
 
 
 @app.post("/game/{game_id}/join", tags=["root"])
 async def join_game(game_id: int, body: dict):
-
     player_id = body['playerID']
     add_player_to_game(player_id, game_id)
     return {}

@@ -15,8 +15,8 @@ class Game(object):
         self._creator_id = creator_id
         self._board = Board(get_letters_order(), get_words())
         self._players = []  # type: list[Player]
-        self._current_player_id = 0
-        self._default_player_id = 0
+        self._current_player_id = creator_id
+        self._default_player_id = creator_id
         self._event = asyncio.Event()
 
     async def wait_for_change(self):
@@ -46,8 +46,11 @@ class Game(object):
         return player
 
     def _next_player(self):
-        next_player = (self._current_player_id + 1) % len(self._players)
-        self._end_turn_hooks(next_player)
+        for index, player in enumerate(self._players):
+            if player.playerID == self._current_player_id:
+                next_player = self._players[(index + 1) % len(self._players)]
+                self._end_turn_hooks(next_player.playerID)
+                return
 
     def _choose_starting_player(self):
         return random.randint(0, len(self._players) - 1)

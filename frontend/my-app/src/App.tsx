@@ -62,7 +62,7 @@ function Game(props: { playerID: number, gameID: number }) {
     return (
       <div>
         <RunningGame gameData={gameData}></RunningGame >
-        <Actions players={gameData.players} defaultPlayerID={gameData.defaultPlayerID} gameID={props.gameID} />
+        <Actions players={gameData.players} defaultPlayerID={gameData.defaultPlayerID} gameID={props.gameID} playerID={props.playerID} />
       </div>
     );
   } else {

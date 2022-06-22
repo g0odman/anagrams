@@ -7,6 +7,7 @@ import styled from '@mui/material/styles/styled';
 import Paper from '@mui/material/Paper'
 import { PlayerProps } from './Player';
 import Alert from '@mui/material/Alert';
+import { postToServer } from '../Client';
 
 
 const Action = styled(Paper)(({ theme }) => ({
@@ -18,50 +19,35 @@ const Action = styled(Paper)(({ theme }) => ({
     height: '100%',
     fontSize: '2.5em',
 }));
-type preformActionType = (url: string, body: string) => void
-class FlipAction extends React.Component<{ performAction: preformActionType }> {
-    constructor(props: { performAction: preformActionType }) {
-        super(props);
-        this.handleClick = this.handleClick.bind(this);
-    }
-    handleClick() {
-        this.props.performAction('flip', '');
-    }
-    render() {
-        return (
-            <Button onClick={this.handleClick} variant="contained">Flip</Button>
-        );
-    }
-}
-class TakeAction extends React.Component<{ performAction: preformActionType }, { takenWord: string; }> {
-    constructor(props: { performAction: preformActionType }) {
-        super(props);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-        this.state = {
-            takenWord: ""
-        };
-    }
-    handleChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
-        this.setState({ takenWord: event.target.value });
-        event.preventDefault();
-    }
-    handleSubmit(event: React.SyntheticEvent) {
-        console.log("Take: " + this.state.takenWord);
-        this.props.performAction('take', JSON.stringify(this.state));
-        this.setState({ takenWord: "" });
-        event.preventDefault();
+type preformActionType = (url: string, body: any) => void
 
-    }
-    render() {
-        return (
-            <form onSubmit={this.handleSubmit}>
-                <TextField id="outlined-basic" label="take" variant="outlined" onChange={this.handleChange} value={this.state.takenWord} />
-                <Button type="submit" variant="contained">Take</Button>
-            </form>
-        );
-    }
+function FlipAction(props: { performAction: preformActionType }) {
+    const handleAction = () => { props.performAction('/flip', {}); }
+    return (
+        <Button onClick={handleAction} variant="contained">Flip</Button>
+    );
 }
+
+function TakeAction(props: { performAction: preformActionType }) {
+    const [takenWord, setTakenWord] = useState('');
+
+    const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+        event.preventDefault();
+        setTakenWord(event.target.value);
+    }
+    const handleSubmit = (event: React.SyntheticEvent) => {
+        event.preventDefault();
+        props.performAction('/take', { takenWord: takenWord });
+        setTakenWord('');
+    }
+    return (
+        <form onSubmit={handleSubmit}>
+            <TextField id="outlined-basic" label="take" variant="outlined" onChange={handleChange} value={takenWord} />
+            <Button type="submit" variant="contained">Take</Button>
+        </form>
+    );
+}
+
 function PlayerSelector(props: { players: PlayerProps[], handleChange: (playerID: number) => void }) {
     const players = props.players.map(player =>
         (<Button onClick={() => props.handleChange(player.playerID)} variant="contained" key={player.playerID}>{player.name}</Button>)
@@ -84,8 +70,7 @@ class StealAction extends React.Component<{ performAction: preformActionType, de
         this.handleWordChange = this.handleWordChange.bind(this);
     }
     handleSubmit(event: React.SyntheticEvent) {
-        console.log("Stealing " + this.state.takenWord + " from " + this.state.targetPlayer);
-        this.props.performAction('steal', JSON.stringify(this.state));
+        this.props.performAction('/steal', this.state);
         this.setState({ takenWord: "" });
         event.preventDefault();
     }
@@ -120,25 +105,13 @@ class StealAction extends React.Component<{ performAction: preformActionType, de
     }
 }
 
-export function Actions(props: { gameID: number, defaultPlayerID: number, players: PlayerProps[] }) {
+export function Actions(props: { gameID: number, playerID: number, defaultPlayerID: number, players: PlayerProps[] }) {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    function performAction(url: string, body: string) {
-        console.log("Performing request to " + url)
-        fetch("http://localhost:8000/game/" + props.gameID + "/" + url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: body,
-        }).then(async response => {
-            const data = await response.json();
-
-            // check for error response
-            setErrorMessage(null);
-            if (!response.ok) {
-                // get error message from body or default to response statusText
-                setErrorMessage((data && data.message) || response.statusText);
-            }
-
-        });
+    function performAction(url: string, body: any) {
+        console.log("Performing request to " + url);
+        body.playerID = props.playerID;
+        body.gameID = props.gameID;
+        postToServer('/game' + url, JSON.stringify(body), setErrorMessage);
     }
     const flipAction = <FlipAction performAction={performAction} />;
     const takeAction = <TakeAction performAction={performAction} />;
