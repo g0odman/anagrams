@@ -7,7 +7,6 @@ import InputLabel from "@mui/material/InputLabel";
 import TextField from "@mui/material/TextField";
 import React, { useState } from "react";
 import { postToServer } from "../Client";
-import "./Login.css";
 
 export function LoginForm(props: { setPlayerID: (playerID: number) => void }) {
     const [playerName, setPlayerName] = useState("");

@@ -121,7 +121,7 @@ class StealAction extends React.Component<{ performAction: preformActionType, de
 }
 
 export function Actions(props: { gameID: number, defaultPlayerID: number, players: PlayerProps[] }) {
-    const [errorMessage, seterrorMessage] = useState(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     function performAction(url: string, body: string) {
         console.log("Performing request to " + url)
         fetch("http://localhost:8000/game/" + props.gameID + "/" + url, {
@@ -132,10 +132,10 @@ export function Actions(props: { gameID: number, defaultPlayerID: number, player
             const data = await response.json();
 
             // check for error response
-            seterrorMessage('');
+            setErrorMessage(null);
             if (!response.ok) {
                 // get error message from body or default to response statusText
-                seterrorMessage((data && data.message) || response.statusText);
+                setErrorMessage((data && data.message) || response.statusText);
             }
 
         });

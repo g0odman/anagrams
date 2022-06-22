@@ -4,7 +4,6 @@ import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import React, { useState } from "react";
 import { postToServer } from "../Client";
-import "./Login.css";
 
 type setErrorMessageType = React.Dispatch<React.SetStateAction<string>>;
 type setGameIDType = React.Dispatch<React.SetStateAction<number | null>>;
