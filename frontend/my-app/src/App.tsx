@@ -9,7 +9,7 @@ import { GameInfo } from './Anagrams/GameInfo';
 import { PlayerList, PlayerProps } from './Anagrams/Player';
 import { LobbyForm } from './Lobby/Lobby';
 import { LoginForm } from './Lobby/Login';
-import usePlayerID from './Lobby/useToken';
+import { getGameID, usePlayerID } from './Lobby/useToken';
 
 
 
@@ -32,7 +32,7 @@ function RunningGame(props: { gameData: GameData }) {
   </div>;
 }
 function Game(props: { playerID: number, gameID: number }) {
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage] = useState("");
   const [gameData, setGameData] = useState({
     letters: [],
     players: [],
@@ -56,7 +56,7 @@ function Game(props: { playerID: number, gameID: number }) {
 
     //clean up function when we close page
     return () => ws.close();
-  }, []);
+  }, [props.gameID]);
 
   if (!errorMessage) {
     return (
@@ -76,6 +76,17 @@ function Game(props: { playerID: number, gameID: number }) {
 function MyRouter(props: {}) {
   const { playerID, setPlayerID } = usePlayerID();
   const [gameID, setGameID] = useState<number | null>(null);
+  useEffect(() => {
+    (async () => {
+      if (playerID) {
+        const newGameID = await getGameID(playerID);
+        setGameID(newGameID);
+      }
+      console.log('Using effect(' + playerID + ', ' + gameID + ')')
+    }
+    )();
+
+  }, [playerID, gameID]);
   if (!playerID) {
     return (<LoginForm setPlayerID={setPlayerID}></LoginForm>);
   }

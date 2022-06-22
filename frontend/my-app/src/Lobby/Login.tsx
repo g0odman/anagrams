@@ -1,9 +1,5 @@
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
-import FormControl from "@mui/material/FormControl";
-import FormHelperText from "@mui/material/FormHelperText";
-import Input from "@mui/material/Input";
-import InputLabel from "@mui/material/InputLabel";
 import TextField from "@mui/material/TextField";
 import React, { useState } from "react";
 import { postToServer } from "../Client";
@@ -13,15 +9,15 @@ export function LoginForm(props: { setPlayerID: (playerID: number) => void }) {
     const [errorMessage, setErrorMessage] = useState("");
 
     async function handleSubmit(event: React.SyntheticEvent) {
+        event.preventDefault();
         setErrorMessage('')
         const data = await postToServer('/player/create',
             JSON.stringify({ playerName: playerName }),
-            setErrorMessage)
+            setErrorMessage);
         if (data) {
             localStorage.setItem('playerID', data.playerID);
             props.setPlayerID(data.playerID);
         }
-        event.preventDefault();
     }
     function handleChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
         setPlayerName(event.target.value);
@@ -30,8 +26,8 @@ export function LoginForm(props: { setPlayerID: (playerID: number) => void }) {
     return (
         <form onSubmit={handleSubmit}>
             {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-            <TextField id="outlined-basic" label="take" variant="outlined" onChange={handleChange} value={playerName} />
-            <Button type="submit" variant="contained">Take</Button>
+            <TextField id="outlined-basic" label="UserName" variant="outlined" onChange={handleChange} value={playerName} />
+            <Button type="submit" variant="contained">Create</Button>
         </form>
     );
 }

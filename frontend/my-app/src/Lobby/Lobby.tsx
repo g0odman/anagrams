@@ -11,14 +11,15 @@ type GameCreationProps = { playerID: number, setGameID: setGameIDType, setErrorM
 
 function CreateGameForm(props: GameCreationProps) {
     async function handleSubmit(event: React.SyntheticEvent) {
+        event.preventDefault();
         props.setErrorMessage('')
         const data = await postToServer('/game/create',
             JSON.stringify({ playerID: props.playerID }),
             props.setErrorMessage)
+
         if (data) {
             props.setGameID(data.gameID);
         }
-        event.preventDefault();
     }
     return (
         <form onSubmit={handleSubmit}>

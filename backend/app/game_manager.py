@@ -1,11 +1,11 @@
 
-from .exceptions import AlreadyJoinedException, NonExistentGameException
+from .player_manager import get_game_id_by_player, is_player_in_game, update_player_status
+from .exceptions import AlreadyJoinedException, NonExistentGameException, PlayerInGameAlreadyException
 from .game import Game
 from random import randint
 
 
 _games = {}  # type: dict[int, Game]
-_games_by_player = {}  # type: dict[int, int]
 
 
 def get_game_by_id(game_id: int) -> Game:
@@ -15,37 +15,33 @@ def get_game_by_id(game_id: int) -> Game:
 
 
 def create_game_by_creator(player_id: int):
-    assert player_id not in _games_by_player
+    if is_player_in_game(player_id):
+        raise PlayerInGameAlreadyException(player_id)
     game_id = randint(0, 2 ** 32)
     while game_id in _games:
         game_id = randint(0, 2 ** 32)
     _games[game_id] = Game(player_id)
+    add_player_to_game(player_id=player_id, game_id=game_id)
+    return game_id
 
 
 def add_player_to_game(player_id: int, game_id: int):
-    if _games_by_player.get(player_id, None) == game_id:
-        # Already joined
+    if is_player_in_game(player_id):
+        if get_game_id_by_player(player_id) == game_id:
+            raise AlreadyJoinedException(player_id)
+        # TODO: separate these exceptions
         raise AlreadyJoinedException(player_id)
-    assert player_id not in _games_by_player
     game = get_game_by_id(game_id)
     game.add_player(player_id)
-    _games_by_player[player_id] = game_id
+    update_player_status(player_id, game_id)
 
 
 def remove_player_from_game(player_id: int, game_id: int):
-    if _games_by_player.get(player_id, None) != game_id:
-        # Already joined
+    if not is_player_in_game(player_id):
+        # TODO: better exception
+        raise AlreadyJoinedException(player_id)
+    if not get_game_id_by_player(player_id) == game_id:
         raise AlreadyJoinedException(player_id)
     game = get_game_by_id(game_id)
     game.remove_player(player_id)
-    del _games[player_id]
-
-
-def get_game_id_by_player(player_id: int):
-    if not is_player_in_game(player_id=player_id):
-        raise NonExistentGameException(player_id)
-    return _games_by_player[player_id]
-
-
-def is_player_in_game(player_id):
-    return player_id in _games_by_player
+    update_player_status(player_id)

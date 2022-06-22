@@ -5,6 +5,10 @@ class BaseAnagramsException(Exception):
     pass
 
 
+class PlayerInGameAlreadyException(BaseAnagramsException):
+    pass
+
+
 class NonExistentPlayerException(BaseAnagramsException):
     pass
 

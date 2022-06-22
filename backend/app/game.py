@@ -3,7 +3,7 @@ import random
 from typing import List
 from dataclasses import asdict
 
-from backend.app.player_manager import get_player_by_id
+from .player_manager import get_player_by_id
 from .board import Board
 from .exceptions import NonAlphabeticStringsException, NonExistentPlayerException, OutOfTurnFlipException
 from .game_setup import get_words, get_letters_order
@@ -15,10 +15,9 @@ class Game(object):
         self._creator_id = creator_id
         self._board = Board(get_letters_order(), get_words())
         self._players = []  # type: list[Player]
-        self._current_player_id = self._choose_starting_player()
-        self._default_player_id = self._choose_starting_player()
+        self._current_player_id = 0
+        self._default_player_id = 0
         self._event = asyncio.Event()
-        self.add_player(creator_id)
 
     async def wait_for_change(self):
         await self._event.wait()
@@ -52,6 +51,9 @@ class Game(object):
 
     def _choose_starting_player(self):
         return random.randint(0, len(self._players) - 1)
+
+    def start_game(self):
+        self._choose_starting_player()
 
     @staticmethod
     def sanitize_word(word: str):
