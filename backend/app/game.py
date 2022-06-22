@@ -34,10 +34,12 @@ class Game(object):
     def add_player(self, player_id: int):
         player = get_player_by_id(player_id=player_id)
         self._players.append(player)
+        self._set_changed()
 
     def remove_player(self, player_id: int):
         player = get_player_by_id(player_id=player_id)
         self._players.append(player)
+        self._set_changed()
 
     def _get_player(self, player_id: int):
         player = get_player_by_id(player_id=player_id)
