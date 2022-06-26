@@ -35,7 +35,7 @@ services:
     # retrieve port 1234 from the container (because it is on this port that
     # we broadcast the server).
     ports:
-      - 3000:3000
+      - 8000:8000
 
   # Second service (container): the client.
   # We use the keyword 'client' for the server.
