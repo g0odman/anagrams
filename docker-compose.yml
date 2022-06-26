@@ -1,6 +1,6 @@
 # A docker-compose must always start by the version tag.
 # We use "3" because it's the last version at this time.
-version: "1"
+version: "3"
 
 # You should know that docker-composes works with services.
 # 1 service = 1 container.
@@ -39,14 +39,14 @@ services:
 
   # Second service (container): the client.
   # We use the keyword 'client' for the server.
-  client:
+  frontend:
     # Here 'client/ corresponds to the path to the client folder
     # that contains the Dockerfile to use.
-    build: client/
+    build: frontend/
 
     # The command to execute once the image is created.
     # The following command will execute "python ./client.py".
-    command: python ./client.py
+    command: nginx -g 'daemon off;'
 
     # The keyword 'network_mode' is used to define the network type.
     # Here we define that the container can access to the 'localhost' of the computer.
@@ -56,4 +56,4 @@ services:
     # should wait until other services are ready before launching.
     # Here, we want the 'client' service to wait until the 'server' service is ready.
     depends_on:
-      - server
+      - backend
