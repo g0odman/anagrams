@@ -11,6 +11,8 @@ FROM python:latest
 # Here we put files at the image '/server/' folder.
 ADD . /backend/
 
+RUN pip3 install -r ./backend/requirements.txt
+
 # I would like to introduce something new, the 'WORKDIR' command.
 # This command changes the base directory of your image.
 # Here we define '/server/' as base directory (where all commands will be executed).
