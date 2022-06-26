@@ -48,9 +48,9 @@ function TakeAction(props: { performAction: preformActionType }) {
     );
 }
 
-function PlayerSelector(props: { players: PlayerProps[], handleChange: (playerID: number) => void }) {
+function PlayerSelector(props: { players: PlayerProps[], handleChange: (playerID: number) => void, currentTarget: number }) {
     const players = props.players.map(player =>
-        (<Button onClick={() => props.handleChange(player.playerID)} variant="contained" key={player.playerID}>{player.name}</Button>)
+        (<Button onClick={() => props.handleChange(player.playerID)} variant="contained" key={player.playerID} disabled={player.playerID === props.currentTarget}>{player.name}</Button>)
     );
     return (
         <ButtonGroup variant="contained" aria-label="outlined primary button group">
@@ -82,7 +82,7 @@ function StealAction(props: { performAction: preformActionType, defaultPlayer: n
                     variant="outlined"
                     onChange={handleWordChange}
                     value={takenWord} />
-                <PlayerSelector players={props.players} handleChange={handlePlayerChange} />
+                <PlayerSelector players={props.players} handleChange={handlePlayerChange} currentTarget={targetPlayer} />
             </div>
             <br />
             <div>
@@ -99,6 +99,7 @@ export function Actions(props: { gameID: number, playerID: number, defaultPlayer
         console.log("Performing request to " + url);
         body.playerID = props.playerID;
         body.gameID = props.gameID;
+        setErrorMessage('');
         postToServer('/game' + url, JSON.stringify(body), setErrorMessage);
     }
     const flipAction = <FlipAction performAction={performAction} />;
