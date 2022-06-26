@@ -16,4 +16,4 @@ ENV PORT=3000
 # Copy the app to the container
 COPY --from=build /frontend/build  /usr/share/nginx/html
 # Copy prepared file with $PORT variable
-COPY ./default.conf /etc/nginx/conf.d/
+COPY ./nginx.config /etc/nginx/conf.d/
