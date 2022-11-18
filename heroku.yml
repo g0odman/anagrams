@@ -1,7 +1,7 @@
 build:
   docker:
-    backend: ./backend/Dockerfile
-    frontend: ./frontend/Dockerfile
+    worker: ./backend/Dockerfile
+    web: ./frontend/Dockerfile
 run:
-  backend: python ./main.py
-  frontend: nginx -g 'daemon off;'
+  worker: python ./main.py
+  web: nginx -g 'daemon off;'
