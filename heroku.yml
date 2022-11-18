@@ -2,6 +2,6 @@ build:
   docker:
     backend: ./backend/Dockerfile
     frontend: ./frontend/Dockerfile
-  run:
-    backend: python ./main.py
-    frontend: nginx -g 'daemon off;'
+run:
+  backend: python ./main.py
+  frontend: nginx -g 'daemon off;'
