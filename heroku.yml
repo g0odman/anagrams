@@ -4,4 +4,4 @@ build:
     web: ./frontend/Dockerfile
 run:
   worker: python ./main.py
-  web: nginx -g 'daemon off;'
+  web: sudo nginx -g 'daemon off;'
