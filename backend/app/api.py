@@ -11,7 +11,7 @@ from .game_manager import add_player_to_game, create_game_by_creator, get_game_b
 from .exceptions import BaseAnagramsException, NonExistentGameException
 from .game import Game
 
-app = FastAPI()
+app = FastAPI(docs_url="/api/docs")
 
 origins = [
     "http://localhost:3000",
