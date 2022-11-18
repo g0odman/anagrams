@@ -57,3 +57,6 @@ services:
     # Here, we want the 'client' service to wait until the 'server' service is ready.
     depends_on:
       - backend
+
+    ports:
+      - 3000:3000

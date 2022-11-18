@@ -2,16 +2,18 @@
 # We use the keyword 'FROM' to do that.
 # In our example, we want to import the python image (from DockerHub).
 # So, we write 'python' for the image name and 'latest' for the version.
-FROM python:latest
+FROM python:3.8.13-slim-bullseye
 
 # In order to launch our python code, we must import the 'server.py' and 'index.html' file.
 # We use the keyword 'ADD' to do that.
 # Just a remember, the first parameter 'server.py' is the name of the file on the host.
 # The second parameter '/server/' is the path where to put the file on the image.
 # Here we put files at the image '/server/' folder.
+COPY requirements.txt requirements.txt
+RUN pip3 install -r ./requirements.txt
+
 ADD . /backend/
 
-RUN pip3 install -r ./backend/requirements.txt
 
 # I would like to introduce something new, the 'WORKDIR' command.
 # This command changes the base directory of your image.

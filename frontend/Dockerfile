@@ -1,6 +1,6 @@
 
 # Use newest version of the image
-FROM node:16.5-alpine3.11 AS build
+FROM node:current-alpine3.16 AS build
 # Copy application
 COPY . /frontend
 # Let's set current directory to main app dir 

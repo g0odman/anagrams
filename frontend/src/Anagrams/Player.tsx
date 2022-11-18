@@ -17,7 +17,10 @@ export interface PlayerProps {
 
 function PlayerWord(props: { word: string }) {
   return (<TableRow key={props.word}>
-    <TableCell>{props.word}</TableCell>
+
+    <Typography gutterBottom variant="h6" component="div">
+      <TableCell>{props.word}</TableCell>
+    </Typography>
   </TableRow>)
 }
 
