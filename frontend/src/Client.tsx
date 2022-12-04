@@ -2,10 +2,13 @@
 
 type setErrorMessageType = (errorMessage: string) => void;
 
+// const targetUrl = 'thawing-spire-40156.herokuapp.com';
+const targetUrl = 'localhost:8000';
+
 export async function postToServer(url: string,
     body: string,
     setErrorMessage?: setErrorMessageType): Promise<any> {
-    return await fetch("http://localhost:8000" + url, {
+    return await fetch('http://' + targetUrl + url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: body
@@ -21,4 +24,10 @@ export async function postToServer(url: string,
         return data;
     }
     )
+}
+
+export function createWebSocket(gameID: number) {
+    const url = "ws://" + targetUrl + "/game/" + gameID + "/ws";
+    const ws = new WebSocket(url);
+    return ws;
 }

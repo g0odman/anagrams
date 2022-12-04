@@ -7,6 +7,7 @@ import { Actions } from "./Actions";
 import { Board, OrderedLetterProps } from "./Board";
 import { GameInfo } from "./GameInfo";
 import { PlayerList, PlayerProps } from "./Player";
+import { createWebSocket } from "../Client";
 
 type GameData = {
     letters: OrderedLetterProps[],
@@ -36,13 +37,8 @@ export function Game(props: { playerID: number, gameID: number }) {
         currentPlayerID: 0,
         defaultPlayerID: 0
     });
-
-    // useEffect(() => {
-    //   fetchFromServer("game/" + gameID + "/data", "", setErrorMessage, setGameData);
-    // }, []);
     useEffect(() => {
-        const url = "ws://localhost:8000/game/" + props.gameID + "/ws";
-        const ws = new WebSocket(url);
+        const ws = createWebSocket(props.gameID);
 
         // recieve message every start page
         ws.onmessage = (e) => {
@@ -66,7 +62,7 @@ export function Game(props: { playerID: number, gameID: number }) {
             >
                 <Container maxWidth="lg">
                     <RunningGame gameData={gameData} gameID={props.gameID}></RunningGame >
-                    <Actions players={gameData.players} defaultPlayerID={gameData.defaultPlayerID} gameID={props.gameID} playerID={props.playerID} />
+                    <Actions players={gameData.players} defaultPlayerID={gameData.defaultPlayerID} gameID={props.gameID} playerID={props.playerID} currentPlayerID={gameData.currentPlayerID} />
                 </Container>
             </Box>
         );
