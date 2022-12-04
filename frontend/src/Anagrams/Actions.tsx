@@ -21,10 +21,10 @@ const Action = styled(Paper)(({ theme }) => ({
 }));
 type preformActionType = (url: string, body: any) => void
 
-function FlipAction(props: { performAction: preformActionType }) {
+function FlipAction(props: { performAction: preformActionType, disabled: boolean }) {
     const handleAction = () => { props.performAction('/flip', {}); }
     return (
-        <Button onClick={handleAction} variant="contained">Flip</Button>
+        <Button onClick={handleAction} variant="contained" disabled={props.disabled}>Flip</Button>
     );
 }
 
@@ -93,7 +93,7 @@ function StealAction(props: { performAction: preformActionType, defaultPlayer: n
 }
 
 
-export function Actions(props: { gameID: number, playerID: number, defaultPlayerID: number, players: PlayerProps[] }) {
+export function Actions(props: { gameID: number, playerID: number, defaultPlayerID: number, players: PlayerProps[], currentPlayerID: number }) {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     function performAction(url: string, body: any) {
         console.log("Performing request to " + url);
@@ -102,7 +102,7 @@ export function Actions(props: { gameID: number, playerID: number, defaultPlayer
         setErrorMessage('');
         postToServer('/game' + url, JSON.stringify(body), setErrorMessage);
     }
-    const flipAction = <FlipAction performAction={performAction} />;
+    const flipAction = <FlipAction performAction={performAction} disabled={props.currentPlayerID !== props.playerID} />;
     const takeAction = <TakeAction performAction={performAction} />;
     const stealAction = <StealAction defaultPlayer={props.defaultPlayerID} players={props.players} performAction={performAction} />;
     const actions = [flipAction, takeAction, stealAction]
