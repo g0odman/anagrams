@@ -18,7 +18,7 @@ type GameData = {
 }
 
 function RunningGame(props: { gameData: GameData, gameID: number }) {
-    return <div>
+    return <Container>
         <GameInfo
             gameID={props.gameID}
             remainingLetters={props.gameData.remainingLetters}
@@ -26,7 +26,7 @@ function RunningGame(props: { gameData: GameData, gameID: number }) {
             players={props.gameData.players} />
         <Board letters={props.gameData.letters} />
         <PlayerList players={props.gameData.players} />
-    </div>;
+    </Container>;
 }
 export function Game(props: { playerID: number, gameID: number }) {
     const [errorMessage] = useState("");

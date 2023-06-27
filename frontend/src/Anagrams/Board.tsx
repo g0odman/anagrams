@@ -35,7 +35,8 @@ export function Board(props: { letters: OrderedLetterProps[]; }) {
   return (
     <Grid container spacing={2}
       alignItems="center"
-      justifyContent="center">
+      justifyContent="center"
+      marginBottom={10}>
       {letters}
     </Grid>
   );

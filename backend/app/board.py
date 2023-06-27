@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List, Set
 
 from .anagram_checker import is_word_avaliable, get_steal, get_needed_letters
-from .exceptions import InvalidWordException, MissingLettersForWordException, NoLettersLeftException
+from .exceptions import InvalidWordException, MissingLettersForWordException, NoLettersLeftException, NoStealAvaliableException
 from .player import Player
 
 
@@ -45,16 +45,20 @@ class Board(object):
         if is_word_avaliable(word, self.current_letters()):
             self._remove_letters(word)
             player.add_word(word)
-        else:
-            raise MissingLettersForWordException(word)
+            return True
+        return False
 
     def steal_word(self, word, current_player: Player, target_player: Player):
         self._check_valid_word(word)
-        stolen_word = get_steal(
-            word, target_player.words, self.current_letters())
-        target_player.remove_word(stolen_word)
-        current_player.add_word(word)
-        self._remove_letters(letters=get_needed_letters(stolen_word, word))
+        try:
+            stolen_word = get_steal(
+                word, target_player.words, self.current_letters())
+            target_player.remove_word(stolen_word)
+            current_player.add_word(word)
+            self._remove_letters(letters=get_needed_letters(stolen_word, word))
+            return True
+        except NoStealAvaliableException:
+            return False
 
     def flip_letter(self):
         if len(self._remainining_letters) == 0:

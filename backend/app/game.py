@@ -5,7 +5,7 @@ from dataclasses import asdict
 
 from .player_manager import get_player_by_id
 from .board import Board
-from .exceptions import NonAlphabeticStringsException, NonExistentPlayerException, OutOfTurnFlipException
+from .exceptions import MissingLettersForWordException, NonAlphabeticStringsException, NonExistentPlayerException, OutOfTurnFlipException
 from .game_setup import get_words, get_letters_order
 from .player import Player
 
@@ -66,17 +66,20 @@ class Game(object):
             raise NonAlphabeticStringsException(word)
         return word.lower()
 
-    def steal(self, player_id: int, target_player_id: int, word: str):
-        word = self.sanitize_word(word)
-        player = self._get_player(player_id)
-        target_player = self._get_player(target_player_id)
-        self._board.steal_word(word, player, target_player)
-        self._end_turn_hooks(player_id)
+    def _steal(self, current_player: Player, word: str):
+        for target_player in self._players:
+            if self._board.steal_word(word, current_player, target_player):
+                return True
 
     def take(self, player_id: int, word: str):
         word = self.sanitize_word(word)
         player = self._get_player(player_id)
-        self._board.take_word(player, word)
+        if self._steal(player, word):
+            pass
+        elif self._board.take_word(player, word):
+            pass
+        else:
+            raise MissingLettersForWordException(word)
         self._end_turn_hooks(player_id)
 
     def flip(self, player_id: int):

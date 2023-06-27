@@ -15,39 +15,55 @@ export interface PlayerProps {
   playerID: number,
   words: string[],
 }
-
-function PlayerWord(props: { word: string }) {
-  return (<TableRow key={props.word}>
-    <Typography gutterBottom variant="h5" component="div">
-      <TableCell>{props.word.toUpperCase()}</TableCell>
-    </Typography>
-  </TableRow>)
+// TODO: how to really do this
+function maxOfList(list: number[]) {
+  return list.reduce((x, y) => (x > y ? x : y), 0)
+}
+function PlayerWord(word: string) {
+  if (!word) {
+    return <TableCell></TableCell>
+  }
+  return <TableCell>{word.toUpperCase()}</TableCell>
+}
+function createRow(wordsList: string[][], index: number) {
+  return <TableRow>
+    {wordsList.map(list => PlayerWord(list[index]))}
+  </TableRow>
+}
+function PlayerWordsDisplay(players: PlayerProps[]) {
+  const wordsList = players.map(player => (player.words));
+  const maxLength = maxOfList(wordsList.map(list => (list.length)));
+  let rows: JSX.Element[] = []
+  for (let index = 0; index < maxLength; index++) {
+    rows.push(createRow(wordsList, index));
+  }
+  return <div>{rows}</div>
 }
 
+function PlayerNamesDisplay(players: PlayerProps[]) {
+  return <TableRow>
+    {players.map(PlayerNameDisplay)}
+  </TableRow>
+}
 
+function PlayerNameDisplay(player: PlayerProps) {
+  return <TableCell>
+    <Typography variant="h4">{player.name}</Typography>
+  </TableCell>;
+}
 
 export function PlayerList(props: { players: PlayerProps[]; }) {
-  const players = props.players.map((player) => {
-    return (
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 100 }} size="small" aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>
-                    <Typography variant="h4" >{player.name}</Typography>
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {player.words.map((word) => (
-                  PlayerWord({ word: word })
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-    );
-  });
+  const playerNames = PlayerNamesDisplay(props.players)
+  const playerWords = PlayerWordsDisplay(props.players);
   return (<Grid container spacing={8} alignItems="center" justifyContent="center">
-    {players}
+    <Table sx={{ minWidth: 100 }} size="small" aria-label="simple table">
+
+      <TableHead>
+        {playerNames}
+      </TableHead>
+      <TableBody>
+        {playerWords}
+      </TableBody>
+    </Table>
   </Grid>);
 }

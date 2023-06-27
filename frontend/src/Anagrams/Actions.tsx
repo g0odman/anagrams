@@ -1,6 +1,5 @@
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import styled from '@mui/material/styles/styled';
@@ -48,51 +47,6 @@ function TakeAction(props: { performAction: preformActionType }) {
     );
 }
 
-function PlayerSelector(props: { players: PlayerProps[], handleChange: (playerID: number) => void, currentTarget: number }) {
-    const players = props.players.map(player =>
-        (<Button onClick={() => props.handleChange(player.playerID)} variant="contained" key={player.playerID} disabled={player.playerID === props.currentTarget}>{player.name}</Button>)
-    );
-    return (
-        <ButtonGroup variant="contained" aria-label="outlined primary button group">
-            {players}
-        </ButtonGroup>
-    );
-}
-function StealAction(props: { performAction: preformActionType, defaultPlayer: number, players: PlayerProps[] }) {
-    const [targetPlayer, setTargetPlayer] = useState(props.defaultPlayer);
-    const [takenWord, setTakenWord] = useState("")
-    const handleSubmit = (event: React.SyntheticEvent) => {
-        props.performAction('/steal', { targetPlayer: targetPlayer, takenWord: takenWord });
-        setTakenWord('');
-        event.preventDefault();
-    }
-    const handlePlayerChange = (playerID: number) => {
-        setTargetPlayer(playerID);
-    }
-    const handleWordChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-        event.preventDefault();
-        setTakenWord(event.target.value);
-    }
-    return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <TextField
-                    id="outlined-basic"
-                    label="steal"
-                    variant="outlined"
-                    onChange={handleWordChange}
-                    value={takenWord} />
-                <PlayerSelector players={props.players} handleChange={handlePlayerChange} currentTarget={targetPlayer} />
-            </div>
-            <br />
-            <div>
-                <Button type="submit" variant="contained">Steal</Button>
-            </div>
-        </form>
-    );
-}
-
-
 export function Actions(props: { gameID: number, playerID: number, defaultPlayerID: number, players: PlayerProps[], currentPlayerID: number }) {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     function performAction(url: string, body: any) {
@@ -104,8 +58,7 @@ export function Actions(props: { gameID: number, playerID: number, defaultPlayer
     }
     const flipAction = <FlipAction performAction={performAction} disabled={props.currentPlayerID !== props.playerID} />;
     const takeAction = <TakeAction performAction={performAction} />;
-    const stealAction = <StealAction defaultPlayer={props.defaultPlayerID} players={props.players} performAction={performAction} />;
-    const actions = [flipAction, takeAction, stealAction]
+    const actions = [flipAction, takeAction]
 
     return (<div>
         {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
