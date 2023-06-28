@@ -26,7 +26,10 @@ class Game(object):
         self._event = asyncio.Event()
 
     async def wait_for_change(self):
-        await asyncio.wait_for(self._event.wait(), timeout=self.INTERVAL)
+        try:
+            await asyncio.wait_for(self._event.wait(), timeout=self.INTERVAL)
+        except asyncio.exceptions.TimeoutError:
+            pass
         self._event.clear()
 
     def _set_changed(self):
