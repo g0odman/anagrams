@@ -50,7 +50,6 @@ function TakeAction(props: { performAction: preformActionType }) {
 export function Actions(props: { gameID: number, playerID: number, defaultPlayerID: number, players: PlayerProps[], currentPlayerID: number }) {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     function performAction(url: string, body: any) {
-        console.log("Performing request to " + url);
         body.playerID = props.playerID;
         body.gameID = props.gameID;
         setErrorMessage('');

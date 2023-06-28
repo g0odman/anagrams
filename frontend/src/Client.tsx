@@ -3,7 +3,7 @@
 type setErrorMessageType = (errorMessage: string) => void;
 
 // const targetUrl = 'thawing-spire-40156.herokuapp.com';
-const targetUrl = 'localhost:8000';
+const targetUrl = '127.0.0.1:8000';
 
 export async function postToServer(url: string,
     body: string,
@@ -29,5 +29,8 @@ export async function postToServer(url: string,
 export function createWebSocket(gameID: number) {
     const url = "ws://" + targetUrl + "/game/" + gameID + "/ws";
     const ws = new WebSocket(url);
+    ws.onerror = function (event) {
+        console.log("WebSocket error observed:", event);
+    };
     return ws;
 }
