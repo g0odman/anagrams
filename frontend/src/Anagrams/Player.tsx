@@ -1,10 +1,12 @@
-import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell'
 import TableHead from '@mui/material/TableHead/TableHead';
+import TableContainer from '@mui/material/TableContainer';
+import Paper from '@mui/material/Paper';
+
 export interface PlayerProps {
     name: string,
     playerID: number,
@@ -15,10 +17,10 @@ function PlayerWord(word: string) {
     if (!word) {
         return <TableCell></TableCell>
     }
-    return <TableCell>{word.toUpperCase()}</TableCell>
+    return <TableCell align="center" >{word.toUpperCase()}</TableCell>
 }
 function createRow(wordsList: string[][], index: number) {
-    return <TableRow>
+    return <TableRow key={index}>
         {wordsList.map(list => PlayerWord(list[index]))}
     </TableRow>
 }
@@ -29,32 +31,25 @@ function PlayerWordsDisplay(players: PlayerProps[]) {
     for (let index = 0; index < maxLength; index++) {
         rows.push(createRow(wordsList, index));
     }
-    return <div>{rows}</div>
-}
-
-function PlayerNamesDisplay(players: PlayerProps[]) {
-    return <TableRow>
-        {players.map(PlayerNameDisplay)}
-    </TableRow>
+    return rows
 }
 
 function PlayerNameDisplay(player: PlayerProps) {
-    return <TableCell>
+    return <TableCell align="center" >
         <Typography variant="h4">{player.name}</Typography>
     </TableCell>;
 }
 
 export function PlayerList(props: { players: PlayerProps[]; }) {
-    const playerNames = PlayerNamesDisplay(props.players)
     const playerWords = PlayerWordsDisplay(props.players);
-    return (<Grid container spacing={8} alignItems="center" justifyContent="center">
-        <Table sx={{ minWidth: 100 }} size="small" aria-label="simple table">
+    return (<TableContainer component={Paper}>
+        <Table>
             <TableHead>
-                {playerNames}
+                {props.players.map(PlayerNameDisplay)}
             </TableHead>
             <TableBody>
                 {playerWords}
             </TableBody>
         </Table>
-    </Grid>);
+    </TableContainer>);
 }
