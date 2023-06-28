@@ -50,25 +50,29 @@ export function Game(props: { playerID: number, gameID: number }) {
         return () => ws.close();
     }, [props.gameID]);
 
-    if (!errorMessage) {
-        return (
-            <Box
-                sx={{
-                    bgcolor: 'background.paper',
-                    pt: 8,
-                    pb: 6,
-                }}
-            >
-                <Container maxWidth="lg">
-                    <RunningGame gameData={gameData} gameID={props.gameID}></RunningGame >
-                    <Actions players={gameData.players} defaultPlayerID={gameData.defaultPlayerID} gameID={props.gameID} playerID={props.playerID} currentPlayerID={gameData.currentPlayerID} />
-                </Container>
-            </Box>
-        );
-    } else {
-        return (<Alert severity="error">
-            <AlertTitle>Error</AlertTitle>
-            This is an error alert — <strong>{errorMessage}</strong>
-        </Alert>);
-    }
+    return (
+        <Container maxWidth="lg" sx={{
+            bgcolor: 'background.paper',
+            pt: 8,
+            pb: 6,
+        }}>
+            {errorMessage ? (
+                <Alert severity="error">
+                    <AlertTitle>Error</AlertTitle>
+                    <strong>{errorMessage}</strong>
+                </Alert>
+            ) : (
+                <>
+                    <RunningGame gameData={gameData} gameID={props.gameID} />
+                    <Actions
+                        players={gameData.players}
+                        defaultPlayerID={gameData.defaultPlayerID}
+                        gameID={props.gameID}
+                        playerID={props.playerID}
+                        currentPlayerID={gameData.currentPlayerID}
+                    />
+                </>
+            )}
+        </Container>
+    );
 }

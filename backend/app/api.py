@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from typing import Union
 from fastapi import Cookie, FastAPI, Request, WebSocket, Response
@@ -31,11 +30,6 @@ origins = [
     "https://g0odman-psychic-meme-6x5797wp42974-3000.preview.app.github.dev/",
 ]
 
-
-class temp(object):
-    form = {"word-to-take": "word", "word-to-steal": "word"}
-
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -65,13 +59,6 @@ async def flip(body: dict):
 async def take(body: dict) -> dict:
     game = get_game_by_id(body["gameID"])
     game.take(body["playerID"], body["takenWord"])
-    return {}
-
-
-@app.post("/game/steal", tags=["root"])
-async def steal(body: dict):
-    game = get_game_by_id(body["gameID"])
-    game.steal(body["playerID"], body["targetPlayer"], body["takenWord"])
     return {}
 
 
