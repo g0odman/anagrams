@@ -29,7 +29,7 @@ function RunningGame(props: { gameData: GameData, gameID: number }) {
     </Container>;
 }
 export function Game(props: { playerID: number, gameID: number }) {
-    const [errorMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
     const [gameData, setGameData] = useState({
         letters: [],
         players: [],
@@ -38,7 +38,7 @@ export function Game(props: { playerID: number, gameID: number }) {
         defaultPlayerID: 0
     });
     useEffect(() => {
-        const ws = createWebSocket(props.gameID);
+        const ws = createWebSocket(props.gameID, setErrorMessage);
 
         // recieve message every start page
         ws.onmessage = (e) => {
@@ -52,7 +52,6 @@ export function Game(props: { playerID: number, gameID: number }) {
 
     if (!errorMessage) {
         return (
-
             <Box
                 sx={{
                     bgcolor: 'background.paper',

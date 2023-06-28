@@ -26,11 +26,20 @@ export async function postToServer(url: string,
     )
 }
 
-export function createWebSocket(gameID: number) {
+export function createWebSocket(gameID: number, setErrorMessage?: setErrorMessageType) {
     const url = "ws://" + targetUrl + "/game/" + gameID + "/ws";
     const ws = new WebSocket(url);
     ws.onerror = function (event) {
         console.log("WebSocket error observed:", event);
+        setErrorMessage?.("WebSocket error observed: " + event);
     };
+    ws.onclose = function (event) {
+        if (!event.wasClean) {
+            console.error('WebSocket connection abruptly closed');
+            setErrorMessage?.("WebSocket connection abruptly closed" + event.code + " " + event.reason);
+        } else {
+            console.log("WebSocket closed cleanly");
+        }
+    }
     return ws;
 }
