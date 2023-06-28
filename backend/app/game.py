@@ -1,16 +1,22 @@
 import asyncio
 import random
-from typing import List
 from dataclasses import asdict
 
 from .player_manager import get_player_by_id
 from .board import Board
-from .exceptions import MissingLettersForWordException, NonAlphabeticStringsException, NonExistentPlayerException, OutOfTurnFlipException
+from .exceptions import (
+    MissingLettersForWordException,
+    NonAlphabeticStringsException,
+    NonExistentPlayerException,
+    OutOfTurnFlipException,
+)
 from .game_setup import get_words, get_letters_order
 from .player import Player
 
 
 class Game(object):
+    INTERVAL = 5
+
     def __init__(self, creator_id: int):
         self._creator_id = creator_id
         self._board = Board(get_letters_order(), get_words())
@@ -20,7 +26,7 @@ class Game(object):
         self._event = asyncio.Event()
 
     async def wait_for_change(self):
-        await self._event.wait()
+        await asyncio.wait_for(self._event.wait(), timeout=self.INTERVAL)
         self._event.clear()
 
     def _set_changed(self):
@@ -88,7 +94,8 @@ class Game(object):
             self._next_player()
             return result
         raise OutOfTurnFlipException(
-            f'Current player: {self._current_player_id} != {player_id}')
+            f"Current player: {self._current_player_id} != {player_id}"
+        )
 
     def remaining_letters_count(self):
         return self._board.remaining_letters_count()
@@ -101,9 +108,9 @@ class Game(object):
 
     def to_json(self):
         return {
-            'letters': list(map(asdict, self.current_letters())),
-            'players': list(map(asdict, self.players())),
-            'remainingLetters': self.remaining_letters_count(),
-            'currentPlayerID': self._current_player_id,
-            'defaultPlayerID': self._default_player_id,
+            "letters": list(map(asdict, self.current_letters())),
+            "players": list(map(asdict, self.players())),
+            "remainingLetters": self.remaining_letters_count(),
+            "currentPlayerID": self._current_player_id,
+            "defaultPlayerID": self._default_player_id,
         }
