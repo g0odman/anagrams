@@ -29,10 +29,20 @@ export async function postToServer(url: string,
 export function createWebSocket(gameID: number, setErrorMessage?: setErrorMessageType) {
     const url = "ws://" + targetUrl + "/game/" + gameID + "/ws";
     const ws = new WebSocket(url);
+    const waitForConnection = (): Promise<void> => {
+        return new Promise((resolve) => {
+            if (ws.readyState === WebSocket.OPEN) {
+                resolve();
+            } else {
+                ws.onopen = resolve as () => void;
+            }
+        });
+    };
     ws.onerror = function (event) {
         console.log("WebSocket error observed:", event);
         setErrorMessage?.("WebSocket error observed: " + event);
     };
+
     ws.onclose = function (event) {
         if (!event.wasClean) {
             console.error('WebSocket connection abruptly closed');
@@ -41,5 +51,14 @@ export function createWebSocket(gameID: number, setErrorMessage?: setErrorMessag
             console.log("WebSocket closed cleanly");
         }
     }
+    const initializeWebSocket = async () => {
+        await waitForConnection();
+        setErrorMessage?.("");
+        console.log("WebSocket connection established");
+        // Proceed with further actions or state updates once the WebSocket connection is established
+    };
+
+    initializeWebSocket();
+
     return ws;
 }
