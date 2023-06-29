@@ -2,7 +2,11 @@ from dataclasses import dataclass
 from typing import List, Set
 
 from .anagram_checker import is_word_avaliable, get_steal, get_needed_letters
-from .exceptions import InvalidWordException, MissingLettersForWordException, NoLettersLeftException, NoStealAvaliableException
+from .exceptions import (
+    InvalidWordException,
+    MissingLettersForWordException,
+    NoLettersLeftException,
+)
 from .player import Player
 
 
@@ -14,8 +18,10 @@ class OrderedLetter(object):
 
 class Board(object):
     def __init__(self, letter_order: List[str], dictionary: Set[str]):
-        self._remainining_letters = [OrderedLetter(
-            letter, letterID) for letterID, letter in enumerate(letter_order)]
+        self._remainining_letters = [
+            OrderedLetter(letter, letterID)
+            for letterID, letter in enumerate(letter_order)
+        ]
         self._dictionary = dictionary
         self._current_letters = list()  # type: list[OrderedLetter]
 
@@ -42,23 +48,17 @@ class Board(object):
 
     def take_word(self, player: Player, word):
         self._check_valid_word(word)
-        if is_word_avaliable(word, self.current_letters()):
-            self._remove_letters(word)
-            player.add_word(word)
-            return True
-        return False
+        if not is_word_avaliable(word, self.current_letters()):
+            raise MissingLettersForWordException(word)
+        self._remove_letters(word)
+        player.add_word(word)
 
     def steal_word(self, word, current_player: Player, target_player: Player):
         self._check_valid_word(word)
-        try:
-            stolen_word = get_steal(
-                word, target_player.words, self.current_letters())
-            target_player.remove_word(stolen_word)
-            current_player.add_word(word)
-            self._remove_letters(letters=get_needed_letters(stolen_word, word))
-            return True
-        except NoStealAvaliableException:
-            return False
+        stolen_word = get_steal(word, target_player.words, self.current_letters())
+        target_player.remove_word(stolen_word)
+        current_player.add_word(word)
+        self._remove_letters(letters=get_needed_letters(stolen_word, word))
 
     def flip_letter(self):
         if len(self._remainining_letters) == 0:

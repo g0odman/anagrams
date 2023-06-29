@@ -1,4 +1,3 @@
-
 from random import randint
 from typing import Optional
 
@@ -33,9 +32,9 @@ def delete_player(player_id: int) -> None:
 
 
 def create_player_from_name(player_name: str) -> int:
-    player_id = randint(0, 2 ** 32)
+    player_id = randint(0, 2**32)
     while player_id in _players:
-        player_id = randint(0, 2 ** 32)
+        player_id = randint(0, 2**32)
     _players[player_id] = Player(name=player_name, playerID=player_id)
     _games_by_player[player_id] = None
     return player_id

@@ -100,7 +100,7 @@ class Game(object):
             f"Current player: {self._current_player_id} != {player_id}"
         )
 
-    def remaining_letters_count(self):
+    def remaining_letters_count(self) -> int:
         return self._board.remaining_letters_count()
 
     def players(self):

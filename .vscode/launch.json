@@ -1,7 +1,6 @@
 {
     "version": "0.2.0",
     "configurations": [
-    
         {
             "type": "pwa-chrome",
             "request": "launch",
@@ -14,6 +13,13 @@
             "name": "JavaScript Debug Terminal",
             "request": "launch",
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Python: File",
+            "type": "python",
+            "request": "launch",
+            "program": "backend/main.py",
+            "justMyCode": true
         }
     ]
 }
