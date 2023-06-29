@@ -6,6 +6,7 @@ from .player_manager import get_player_by_id
 from .board import Board
 from .exceptions import (
     MissingLettersForWordException,
+    NoStealAvaliableException,
     NonAlphabeticStringsException,
     NonExistentPlayerException,
     OutOfTurnFlipException,
@@ -77,15 +78,26 @@ class Game(object):
 
     def _steal(self, current_player: Player, word: str):
         for target_player in self._players:
-            if self._board.steal_word(word, current_player, target_player):
+            try:
+                self._board.steal_word(word, current_player, target_player)
                 return True
+            except NoStealAvaliableException:
+                pass
+        return False
+
+    def _take(self, player: Player, word: str):
+        try:
+            self._board.take_word(player, word)
+            return True
+        except MissingLettersForWordException:
+            return False
 
     def take(self, player_id: int, word: str):
         word = self.sanitize_word(word)
         player = self._get_player(player_id)
         if self._steal(player, word):
             pass
-        elif self._board.take_word(player, word):
+        elif self._take(player, word):
             pass
         else:
             raise MissingLettersForWordException(word)
