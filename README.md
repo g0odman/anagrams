@@ -13,7 +13,7 @@ npm start
 ```
 
 ## TODO:
-* Upload to Azure
+* Upload to Cloud
 * Check on Mobile
 * Add instructions
 * Easier game join - link
