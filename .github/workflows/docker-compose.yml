@@ -29,7 +29,7 @@ jobs:
             username: ${{ secrets.REGISTRY_USERNAME }}
             password: ${{ secrets.REGISTRY_PASSWORD }}
         - run: |
-            IMAGE_TAG=${{ env.IMAGE_NAME }}:latest docker compose -f docker-compose.yml build
+            docker compose -f docker-compose.yml build
             docker tag ${{ env.IMAGE_NAME }}:latest ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
         

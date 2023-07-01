@@ -60,4 +60,4 @@ services:
 
     ports:
       - 3000:3000
-  image: ${IMAGE_TAG:-"anagrams:latest"}
+  image: anagrams:latest
