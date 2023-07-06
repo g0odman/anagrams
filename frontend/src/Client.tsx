@@ -2,13 +2,10 @@
 
 type setErrorMessageType = (errorMessage: string) => void;
 
-// const targetUrl = 'thawing-spire-40156.herokuapp.com';
-const targetUrl = '127.0.0.1:8000';
-
 export async function postToServer(url: string,
     body: string,
     setErrorMessage?: setErrorMessageType): Promise<any> {
-    return await fetch('http://' + targetUrl + url, {
+    return await fetch("/api" + url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: body
@@ -26,9 +23,14 @@ export async function postToServer(url: string,
     )
 }
 
+function getUrlForWebSocket(gameID: number) {
+    const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+    const host = window.location.host;
+
+    return protocol + host + "/api/game/" + gameID + "/ws";
+}
 export function createWebSocket(gameID: number, setErrorMessage?: setErrorMessageType) {
-    const url = "ws://" + targetUrl + "/game/" + gameID + "/ws";
-    const ws = new WebSocket(url);
+    const ws = new WebSocket(getUrlForWebSocket(gameID));
     const waitForConnection = (): Promise<void> => {
         return new Promise((resolve) => {
             if (ws.readyState === WebSocket.OPEN) {
