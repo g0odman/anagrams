@@ -10,6 +10,7 @@ from .exceptions import (
     NonAlphabeticStringsException,
     NonExistentPlayerException,
     OutOfTurnFlipException,
+    WordTooShortException,
 )
 from .game_setup import get_words, get_letters_order
 from .player import Player
@@ -18,9 +19,9 @@ from .player import Player
 class Game(object):
     INTERVAL = 5
 
-    def __init__(self, creator_id: int):
+    def __init__(self, creator_id: int, game_size: str):
         self._creator_id = creator_id
-        self._board = Board(get_letters_order(), get_words())
+        self._board = Board(get_letters_order(game_size=game_size), get_words())
         self._players = []  # type: list[Player]
         self._current_player_id = creator_id
         self._default_player_id = creator_id
@@ -71,10 +72,13 @@ class Game(object):
         self._choose_starting_player()
 
     @staticmethod
-    def sanitize_word(word: str):
+    def _sanitize_word(word: str) -> str:
+        word = word.lower().strip()
+        if len(word) < 4:
+            raise WordTooShortException(word)
         if not word.isalpha():
             raise NonAlphabeticStringsException(word)
-        return word.lower()
+        return word
 
     def _steal(self, current_player: Player, word: str):
         for target_player in self._players:
@@ -93,7 +97,7 @@ class Game(object):
             return False
 
     def take(self, player_id: int, word: str):
-        word = self.sanitize_word(word)
+        word = self._sanitize_word(word)
         player = self._get_player(player_id)
         if self._steal(player, word):
             pass
