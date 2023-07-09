@@ -15,43 +15,42 @@ import { Game } from './Anagrams/Game'
 const theme = createTheme();
 
 function MyRouter(props: {}) {
-  const { playerID, setPlayerID } = usePlayerID();
-  const [gameID, setGameID] = useState<number | null>(null);
-  useEffect(() => {
-    (async () => {
-      if (playerID) {
-        const newGameID = await getGameID(playerID);
-        setGameID(newGameID);
-      }
-      console.log('Using effect(' + playerID + ', ' + gameID + ')')
-    }
-    )();
+    const { playerID, setPlayerID } = usePlayerID();
+    const [gameID, setGameID] = useState<number | null>(null);
+    useEffect(() => {
+        (async () => {
+            if (playerID) {
+                const newGameID = await getGameID(playerID);
+                setGameID(newGameID);
+            }
+        }
+        )();
 
-  }, [playerID, gameID]);
-  if (!playerID) {
-    return (<LoginForm setPlayerID={setPlayerID}></LoginForm>);
-  }
-  if (!gameID) {
-    return <LobbyForm playerID={playerID} setGameID={setGameID}></LobbyForm>
-  }
-  return <Game playerID={playerID} gameID={gameID}></Game>
+    }, [playerID, gameID]);
+    if (!playerID) {
+        return (<LoginForm setPlayerID={setPlayerID}></LoginForm>);
+    }
+    if (!gameID) {
+        return <LobbyForm playerID={playerID} setGameID={setGameID}></LobbyForm>
+    }
+    return <Game playerID={playerID} gameID={gameID}></Game>
 }
 function App() {
 
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AppBar position="relative">
-        <Toolbar>
-          <AbcIcon sx={{ mr: 4 }}></AbcIcon>
-          <Typography variant="h6" color="inherit" noWrap>
-            Anagrams Game
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <MyRouter></MyRouter>
-    </ThemeProvider>
-  );
+    return (
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <AppBar position="relative">
+                <Toolbar>
+                    <AbcIcon sx={{ mr: 4 }}></AbcIcon>
+                    <Typography variant="h6" color="inherit" noWrap>
+                        Anagrams Game
+                    </Typography>
+                </Toolbar>
+            </AppBar>
+            <MyRouter />
+        </ThemeProvider>
+    );
 }
 
 export default App;
