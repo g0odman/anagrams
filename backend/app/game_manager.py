@@ -11,7 +11,7 @@ from .exceptions import (
 from .game import Game
 from random import randint
 
-
+MAX_GAMES = 10**2
 _games = {}  # type: dict[int, Game]
 
 
@@ -29,14 +29,19 @@ def get_game_by_id(game_id: int) -> Game:
     return _read_games_from_db(game_id)
 
 
-def create_game_by_creator(creator_id: int) -> int:
+def create_game_by_creator(creator_id: int, game_size: str) -> int:
     if is_player_in_game(creator_id):
         raise PlayerInGameAlreadyException(creator_id)
-    game_id = randint(0, 2**32)
-    while game_id in _games:
-        game_id = randint(0, 2**32)
-    _write_game_to_db(Game(creator_id), game_id)
+    game_id = _create_game_id()
+    _write_game_to_db(Game(creator_id, game_size), game_id)
     add_player_to_game(player_id=creator_id, game_id=game_id)
+    return game_id
+
+
+def _create_game_id() -> int:
+    game_id = randint(0, len(_games) + MAX_GAMES)
+    while game_id in _games:
+        game_id = randint(0, len(_games) + MAX_GAMES)
     return game_id
 
 
@@ -57,4 +62,3 @@ def remove_player_from_game(player_id: int, game_id: int) -> None:
     game = get_game_by_id(game_id)
     game.remove_player(player_id)
     update_player_status(player_id)
-

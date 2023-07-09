@@ -66,7 +66,8 @@ async def leave_game(game_id: int, body: dict):
 @app.post("/api/game/create", tags=["root"])
 async def create_game(body: dict):
     player_id = body["playerID"]
-    game_id = create_game_by_creator(player_id)
+    game_size = body.get("gameSize", "full")
+    game_id = create_game_by_creator(player_id, game_size)
     return {"gameID": game_id}
 
 

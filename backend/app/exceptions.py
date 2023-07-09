@@ -37,6 +37,10 @@ class NoStealAvaliableException(BaseAnagramsException):
     pass
 
 
+class WordTooShortException(BaseAnagramsException):
+    pass
+
+
 class MissingLettersForWordException(BaseAnagramsException):
     pass
 
