@@ -2,7 +2,7 @@ import logging
 from fastapi import FastAPI, Request, WebSocket
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from starlette.responses import FileResponse
 
 from .player_manager import (
     create_player_from_name,
@@ -23,9 +23,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 app = FastAPI(docs_url="/api/docs", debug=True)
 
-app.mount("/static", StaticFiles(directory="app\\build\\static"), name="static")
-
-templates = Jinja2Templates(directory="app\\build")
+app.mount("/static", StaticFiles(directory="/build/static"), name="static")
 
 
 @app.exception_handler(BaseAnagramsException)
@@ -109,5 +107,5 @@ async def websocket_endpoint(game_id: int, websocket: WebSocket):
 
 
 @app.get("/")
-async def serve_spa(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+async def serve_spa():
+    return FileResponse("/build/index.html")
