@@ -1,11 +1,14 @@
+import { config } from "./Constants";
 
 
 type setErrorMessageType = (errorMessage: string) => void;
+const apiUrl = config.url.API_URL;
+const apiHost = config.url.API_HOST;
 
 export async function postToServer(url: string,
     body: string,
     setErrorMessage?: setErrorMessageType): Promise<any> {
-    return await fetch("/api" + url, {
+    return await fetch(apiUrl + "/api" + url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: body
@@ -25,7 +28,7 @@ export async function postToServer(url: string,
 
 function getUrlForWebSocket(gameID: number) {
     const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-    const host = window.location.host;
+    const host = apiHost ? apiHost : window.location.host;
 
     return protocol + host + "/api/game/" + gameID + "/ws";
 }

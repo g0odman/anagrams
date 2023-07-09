@@ -1,7 +1,9 @@
 import logging
+import sys
 from fastapi import FastAPI, Request, WebSocket
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import FileResponse
 
 from .player_manager import (
@@ -22,8 +24,22 @@ from .exceptions import BaseAnagramsException, NonExistentGameException
 logging.basicConfig(level=logging.DEBUG)
 
 app = FastAPI(docs_url="/api/docs", debug=True)
+if sys.platform == "linux":
+    app.mount("/static", StaticFiles(directory="/build/static"), name="static")
 
-app.mount("/static", StaticFiles(directory="/build/static"), name="static")
+origins = [
+    "http://localhost:3000",
+    "localhost:3000",
+    "https://g0odman-psychic-meme-6x5797wp42974-3000.preview.app.github.dev/",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.exception_handler(BaseAnagramsException)
