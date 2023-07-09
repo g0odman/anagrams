@@ -1,6 +1,8 @@
 from collections import Counter
 from typing import List
 
+from .stemmer import are_same_stem
+
 from .exceptions import NoStealAvaliableException
 
 
@@ -17,18 +19,33 @@ def get_steal(word: str, player_words: List[str], letters: List[str]) -> str:
     avaliable_letters = Counter(letters)
     for player_word in player_words:
         player_word_counter = Counter(player_word)
-        if (
-            len(word) > len(player_word)
-            and all(letter in dst_word for letter in player_word_counter)
-            and all(
-                can_steal_letter(
-                    dst_word, avaliable_letters, player_word_counter, letter
-                )
-                for letter in dst_word
-            )
+        if can_steal_word(
+            word, dst_word, avaliable_letters, player_word, player_word_counter
         ):
             return player_word
     raise NoStealAvaliableException(word)
+
+
+def can_steal_word(
+    word: str,
+    dst_word: Counter,
+    avaliable_letters: Counter,
+    player_word: str,
+    player_word_counter: Counter,
+):
+    if len(word) <= len(player_word):
+        return False
+    if any(letter not in dst_word for letter in player_word_counter):
+        return False
+    for letter in dst_word:
+        if not can_steal_letter(
+            dst_word, avaliable_letters, player_word_counter, letter
+        ):
+            return False
+    if are_same_stem(word, player_word):
+        # TODO: raise an exception here and throw if all the words fail
+        return False
+    return True
 
 
 def can_steal_letter(
